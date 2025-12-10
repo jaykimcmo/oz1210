@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
       { hostname: "tong.visitkorea.or.kr" },
       { hostname: "cdn.visitkorea.or.kr" },
     ],
+    // Next.js 16부터 필수: 사용하는 quality 값들을 명시
+    qualities: [75, 85, 100],
   },
 };
 

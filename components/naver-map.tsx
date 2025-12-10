@@ -196,7 +196,8 @@ export function NaverMap({
         }
 
         // 새 관광지 처리
-        processedTourIdsRef.current.add(tour.contentid);
+        // 주의: processedTourIdsRef는 마커 생성이 성공한 후에만 추가해야 함
+        // (마커 생성 실패 시 다음 렌더링에서 재시도할 수 있도록)
 
         try {
           const [lng, lat] = convertKATECToWGS84(tour.mapx, tour.mapy);
@@ -209,7 +210,7 @@ export function NaverMap({
                 `[NaverMap] 좌표 범위 초과로 마커 생성 건너뛰기: ${tour.title} (lng=${lng}, lat=${lat})`,
               );
             }
-            return; // 마커 생성하지 않고 다음 항목으로
+            return; // 마커 생성하지 않고 다음 항목으로 (processed에 추가하지 않음)
           }
 
           const position = new naver.maps.LatLng(lat, lng);
@@ -251,7 +252,9 @@ export function NaverMap({
             }
           });
 
+          // 마커 생성 성공 후에만 processed에 추가
           newMarkers.push(marker);
+          processedTourIdsRef.current.add(tour.contentid);
           validMarkerCount++;
         } catch (err) {
           invalidMarkerCount++;
@@ -259,6 +262,7 @@ export function NaverMap({
           if (process.env.NODE_ENV === 'development') {
             console.warn(`[NaverMap] 마커 생성 실패: ${tour.title}`, err);
           }
+          // 마커 생성 실패 시 processed에 추가하지 않음 (다음 렌더링에서 재시도 가능)
         }
       });
 
@@ -463,4 +467,3 @@ export function NaverMap({
     </>
   );
 }
-

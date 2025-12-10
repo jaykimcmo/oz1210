@@ -151,7 +151,7 @@ export function TourFilters({ areaCodes }: TourFiltersProps) {
             지역:
           </label>
           <Select value={currentAreaCode || 'all'} onValueChange={handleAreaChange}>
-            <SelectTrigger id="area-filter" className="w-[140px]">
+            <SelectTrigger id="area-filter" className="w-[140px]" aria-label="지역 필터 선택">
               <SelectValue placeholder="전체" />
             </SelectTrigger>
             <SelectContent>
@@ -168,7 +168,7 @@ export function TourFilters({ areaCodes }: TourFiltersProps) {
         {/* 관광 타입 필터 */}
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <label className="text-sm font-medium whitespace-nowrap">타입:</label>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 overflow-x-auto pb-2 sm:pb-0 -mx-2 px-2 sm:mx-0 sm:px-0">
             {contentTypeList.map(([typeId, typeName]) => {
               const isSelected = currentContentTypeIds.includes(typeId);
               return (
@@ -179,10 +179,11 @@ export function TourFilters({ areaCodes }: TourFiltersProps) {
                   size="sm"
                   onClick={() => handleContentTypeToggle(typeId)}
                   className={cn(
-                    'transition-all',
+                    'transition-all duration-200',
                     isSelected && 'shadow-sm',
                   )}
                   aria-pressed={isSelected}
+                  aria-label={`${typeName} ${isSelected ? '선택됨' : '선택 안됨'}`}
                 >
                   {typeName}
                 </Button>
@@ -197,7 +198,7 @@ export function TourFilters({ areaCodes }: TourFiltersProps) {
             정렬:
           </label>
           <Select value={currentSort} onValueChange={handleSortChange}>
-            <SelectTrigger id="sort-filter" className="w-[120px]">
+            <SelectTrigger id="sort-filter" className="w-[120px]" aria-label="정렬 옵션 선택">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -261,7 +262,8 @@ export function TourFilters({ areaCodes }: TourFiltersProps) {
             variant="ghost"
             size="sm"
             onClick={handleReset}
-            className="h-6 text-xs"
+            className="h-6 text-xs transition-colors"
+            aria-label="모든 필터 초기화"
           >
             모두 초기화
           </Button>

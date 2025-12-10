@@ -29,6 +29,7 @@ interface TourCardProps {
   tour: TourItem;
   isSelected?: boolean;
   onCardClick?: (tour: TourItem) => void;
+  priority?: boolean;
 }
 
 /**
@@ -42,6 +43,7 @@ export function TourCard({
   tour,
   isSelected = false,
   onCardClick,
+  priority = false,
 }: TourCardProps) {
   // 이미지 URL 결정 (firstimage 우선, 없으면 firstimage2, 둘 다 없으면 null)
   const imageUrl = tour.firstimage || tour.firstimage2 || null;
@@ -71,8 +73,9 @@ export function TourCard({
       onClick={handleClick}
       className={cn(
         'group flex flex-col overflow-hidden rounded-lg border bg-card shadow-sm',
-        'transition-all duration-200 hover:scale-[1.02] hover:shadow-lg',
+        'transition-all duration-300 hover:scale-[1.02] hover:shadow-lg',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        'active:scale-[0.98]',
         isSelected && 'ring-2 ring-primary ring-offset-2',
       )}
       aria-label={`${tour.title} 상세보기`}
@@ -87,6 +90,9 @@ export function TourCard({
             fill
             className="object-cover transition-transform duration-200 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            loading={priority ? undefined : 'lazy'}
+            priority={priority}
+            quality={85}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-muted">

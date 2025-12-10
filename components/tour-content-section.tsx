@@ -90,6 +90,9 @@ export function TourContentSection({
     setIsLoading(true);
     setError(null);
 
+    // 중복 요청 방지: 약간의 지연을 두어 빠른 스크롤 시 중복 요청 방지
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     try {
       const nextPage = pageNo + 1;
       let result;
@@ -141,11 +144,13 @@ export function TourContentSection({
       }
     } catch (err) {
       console.error('[TourContentSection] 다음 페이지 로드 실패:', err);
+      // 에러 발생 시에도 hasMore를 false로 설정하지 않음 (재시도 가능하도록)
       setError(
         err instanceof Error
           ? err
           : new Error('다음 페이지를 불러오는 중 오류가 발생했습니다.'),
       );
+      // 에러 발생 시 자동으로 hasMore를 false로 설정하지 않고, 사용자가 재시도할 수 있도록 함
     } finally {
       setIsLoading(false);
     }
@@ -184,6 +189,18 @@ export function TourContentSection({
     };
   }, [hasMore, isLoading, loadNextPage]);
 
+  // 재시도 함수
+  const handleRetry = useCallback(() => {
+    setError(null);
+    // 현재 페이지 다시 로드
+    if (hasMore && !isLoading) {
+      loadNextPage();
+    } else {
+      // 초기 로드 실패 시 페이지 새로고침
+      window.location.reload();
+    }
+  }, [hasMore, isLoading, loadNextPage]);
+
   // 관광지 클릭 핸들러
   const handleTourClick = useCallback((tour: TourItem) => {
     setSelectedTourId(tour.contentid);
@@ -213,8 +230,8 @@ export function TourContentSection({
     >
       {/* 검색 결과 개수 표시 */}
       {keyword && (
-        <div className="mb-4 text-sm text-muted-foreground">
-          &quot;{keyword}&quot; 검색 결과: {totalCount}개
+        <div className="mb-4 text-sm text-muted-foreground" role="status" aria-live="polite">
+          &quot;{keyword}&quot; 검색 결과: <strong>{totalCount}</strong>개
         </div>
       )}
 
@@ -225,6 +242,7 @@ export function TourContentSection({
           <TourList
             tours={tours}
             error={error}
+            onRetry={handleRetry}
             selectedTourId={selectedTourId}
             onTourClick={handleTourClick}
           />
@@ -243,6 +261,13 @@ export function TourContentSection({
                   </p>
                 </div>
               )}
+            </div>
+          )}
+          {!hasMore && tours.length > 0 && (
+            <div className="flex items-center justify-center py-8">
+              <p className="text-sm text-muted-foreground">
+                모든 관광지를 불러왔습니다.
+              </p>
             </div>
           )}
         </article>
@@ -276,6 +301,7 @@ export function TourContentSection({
             <TourList
               tours={tours}
               error={error}
+              onRetry={handleRetry}
               selectedTourId={selectedTourId}
               onTourClick={handleTourClick}
             />
@@ -296,16 +322,24 @@ export function TourContentSection({
                 )}
               </div>
             )}
+            {!hasMore && tours.length > 0 && (
+              <div className="flex items-center justify-center py-8">
+                <p className="text-sm text-muted-foreground">
+                  모든 관광지를 불러왔습니다.
+                </p>
+              </div>
+            )}
           </TabsContent>
           <TabsContent
             value="map"
-            className="mt-4"
+            className="mt-4 transition-opacity duration-200"
             onFocus={() => {
               // 탭 전환 시 지도 리사이즈를 위해 window resize 이벤트 트리거
               setTimeout(() => {
                 window.dispatchEvent(new Event('resize'));
               }, 100);
             }}
+            aria-label="지도 뷰"
           >
             <NaverMap
               tours={tours}

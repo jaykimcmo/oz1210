@@ -117,7 +117,7 @@ export function TourSearch({ initialKeyword }: TourSearchProps) {
             onKeyDown={handleKeyDown}
             className={cn(
               'w-full pl-10 pr-10',
-              'min-w-[300px] sm:min-w-[500px]',
+              'min-w-0 sm:min-w-[500px]',
             )}
             aria-label="검색어 입력"
           />
@@ -135,7 +135,7 @@ export function TourSearch({ initialKeyword }: TourSearchProps) {
         <Button
           type="button"
           onClick={handleSearch}
-          className="shrink-0"
+          className="shrink-0 transition-all duration-200"
           aria-label="검색 실행"
         >
           <Search className="h-4 w-4" />

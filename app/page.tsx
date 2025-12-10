@@ -60,9 +60,11 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   // 지역 목록 로드 (캐싱 적용)
   let areaCodes = [];
+  let areaCodesError: Error | null = null;
   try {
     areaCodes = await getAreaCode();
   } catch (err) {
+    areaCodesError = err instanceof Error ? err : new Error('지역 목록을 불러올 수 없습니다.');
     console.error('[HomePage] 지역 목록 로드 실패:', err);
     // 에러 발생 시 빈 배열 사용 (필터는 동작하지 않지만 페이지는 표시)
   }
@@ -145,7 +147,15 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6"
         aria-label="필터 및 정렬"
       >
-        <TourFilters areaCodes={areaCodes} />
+        {areaCodesError ? (
+          <div className="rounded-lg border bg-muted/50 p-4">
+            <p className="text-sm text-muted-foreground">
+              지역 필터를 불러올 수 없습니다. 목록은 표시되지만 지역 필터는 사용할 수 없습니다.
+            </p>
+          </div>
+        ) : (
+          <TourFilters areaCodes={areaCodes} />
+        )}
       </section>
 
       {/* CONTENT SECTION: LIST + MAP */}

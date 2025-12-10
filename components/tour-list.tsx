@@ -86,8 +86,10 @@ export function TourList({
       className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
       aria-label="관광지 목록"
       role="list"
+      aria-live="polite"
+      aria-atomic="false"
     >
-      {tours.map((tour) => (
+      {tours.map((tour, index) => (
         <div
           key={tour.contentid}
           role="listitem"
@@ -97,6 +99,8 @@ export function TourList({
             tour={tour}
             isSelected={selectedTourId === tour.contentid}
             onCardClick={onTourClick}
+            // 첫 6개 카드에 priority 추가 (LCP 최적화)
+            priority={index < 6}
           />
         </div>
       ))}
