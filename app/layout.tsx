@@ -28,7 +28,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider localization={koKR}>
+    <ClerkProvider
+      localization={koKR}
+      appearance={{
+        cssLayerName: "clerk", // Tailwind 4 호환성
+      }}
+    >
       <html lang="ko">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
