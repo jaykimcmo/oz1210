@@ -18,23 +18,75 @@
  * - components/Navbar: 헤더 네비게이션
  * - components/Footer: 푸터
  * - components/tour-list.tsx: 관광지 목록 컴포넌트
- * - lib/api/tour-api.ts: getAreaBasedList 함수
+ * - components/tour-filters.tsx: 필터 컴포넌트
+ * - lib/api/tour-api.ts: getAreaCode, getAreaBasedList 함수
  */
 
 import { TourList } from '@/components/tour-list';
-import { getAreaBasedList } from '@/lib/api/tour-api';
+import { TourFilters } from '@/components/tour-filters';
+import { getAreaCode, getAreaBasedList } from '@/lib/api/tour-api';
+import type { TourItem } from '@/lib/types/tour';
 
-export default async function HomePage() {
-  // API 호출 (Server Component)
-  let tours = [];
+interface HomePageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function HomePage({ searchParams }: HomePageProps) {
+  // searchParams 처리 (Next.js 15는 Promise)
+  const params = await searchParams;
+
+  // 필터 파라미터 변환
+  const areaCode =
+    typeof params.areaCode === 'string' && params.areaCode
+      ? params.areaCode
+      : undefined;
+
+  // contentTypeId는 쉼표로 구분된 문자열이므로 첫 번째 타입만 사용
+  // (API는 단일 contentTypeId만 지원)
+  const contentTypeId =
+    typeof params.contentTypeId === 'string' && params.contentTypeId
+      ? params.contentTypeId.split(',')[0]
+      : undefined;
+
+  // 정렬 옵션
+  const sort = params.sort === 'name' ? 'name' : 'latest';
+
+  // 지역 목록 로드 (캐싱 적용)
+  let areaCodes = [];
+  try {
+    areaCodes = await getAreaCode();
+  } catch (err) {
+    console.error('[HomePage] 지역 목록 로드 실패:', err);
+    // 에러 발생 시 빈 배열 사용 (필터는 동작하지 않지만 페이지는 표시)
+  }
+
+  // 관광지 목록 로드
+  let tours: TourItem[] = [];
   let error: Error | null = null;
 
   try {
     const result = await getAreaBasedList({
+      areaCode,
+      contentTypeId,
       numOfRows: 20,
       pageNo: 1,
     });
     tours = result.items;
+
+    // 클라이언트 측 정렬 처리
+    if (sort === 'name') {
+      // 이름순 정렬 (가나다순)
+      tours = [...tours].sort((a, b) =>
+        a.title.localeCompare(b.title, 'ko'),
+      );
+    } else {
+      // 최신순 정렬 (modifiedtime 내림차순)
+      tours = [...tours].sort((a, b) => {
+        const timeA = a.modifiedtime || '0';
+        const timeB = b.modifiedtime || '0';
+        return timeB.localeCompare(timeA);
+      });
+    }
   } catch (err) {
     error = err instanceof Error ? err : new Error('알 수 없는 오류가 발생했습니다.');
     console.error('[HomePage] API 호출 실패:', err);
@@ -57,23 +109,11 @@ export default async function HomePage() {
       */}
 
       {/* FILTERS & CONTROLS SECTION */}
-      {/* Phase 2.3에서 구현 예정 */}
       <section
         className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6"
         aria-label="필터 및 정렬"
       >
-        <div className="flex flex-col gap-4">
-          {/* 필터 영역 플레이스홀더 */}
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="h-10 w-32 rounded-md bg-muted animate-pulse" />
-            <div className="h-10 w-32 rounded-md bg-muted animate-pulse" />
-            <div className="h-10 w-24 rounded-md bg-muted animate-pulse" />
-          </div>
-          {/* 필터 적용 상태 표시 영역 */}
-          <div className="flex flex-wrap gap-2">
-            {/* 선택된 필터 표시 영역 (Phase 2.3에서 구현) */}
-          </div>
-        </div>
+        <TourFilters areaCodes={areaCodes} />
       </section>
 
       {/* CONTENT SECTION: LIST + MAP */}
