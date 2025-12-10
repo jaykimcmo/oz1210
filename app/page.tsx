@@ -24,7 +24,8 @@
 
 import { TourList } from '@/components/tour-list';
 import { TourFilters } from '@/components/tour-filters';
-import { getAreaCode, getAreaBasedList } from '@/lib/api/tour-api';
+import { TourSearch } from '@/components/tour-search';
+import { getAreaCode, getAreaBasedList, searchKeyword } from '@/lib/api/tour-api';
 import type { TourItem } from '@/lib/types/tour';
 
 interface HomePageProps {
@@ -34,6 +35,12 @@ interface HomePageProps {
 export default async function HomePage({ searchParams }: HomePageProps) {
   // searchParams 처리 (Next.js 15는 Promise)
   const params = await searchParams;
+
+  // 검색 파라미터 확인
+  const keyword =
+    typeof params.keyword === 'string' && params.keyword.trim()
+      ? params.keyword.trim()
+      : undefined;
 
   // 필터 파라미터 변환
   const areaCode =
@@ -60,18 +67,34 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     // 에러 발생 시 빈 배열 사용 (필터는 동작하지 않지만 페이지는 표시)
   }
 
-  // 관광지 목록 로드
+  // 관광지 목록 로드 (검색 모드 vs 목록 모드)
   let tours: TourItem[] = [];
+  let totalCount = 0;
   let error: Error | null = null;
 
   try {
-    const result = await getAreaBasedList({
-      areaCode,
-      contentTypeId,
-      numOfRows: 20,
-      pageNo: 1,
-    });
-    tours = result.items;
+    if (keyword) {
+      // 검색 모드
+      const result = await searchKeyword({
+        keyword,
+        areaCode,
+        contentTypeId,
+        numOfRows: 20,
+        pageNo: 1,
+      });
+      tours = result.items;
+      totalCount = result.totalCount;
+    } else {
+      // 목록 모드
+      const result = await getAreaBasedList({
+        areaCode,
+        contentTypeId,
+        numOfRows: 20,
+        pageNo: 1,
+      });
+      tours = result.items;
+      totalCount = result.totalCount;
+    }
 
     // 클라이언트 측 정렬 처리
     if (sort === 'name') {
@@ -108,6 +131,15 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       </section>
       */}
 
+      {/* SEARCH SECTION */}
+      <section
+        id="search-section"
+        className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6"
+        aria-label="검색"
+      >
+        <TourSearch initialKeyword={keyword} />
+      </section>
+
       {/* FILTERS & CONTROLS SECTION */}
       <section
         className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6"
@@ -122,6 +154,13 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         className="container mx-auto px-4 sm:px-6 lg:px-8 pb-8 sm:pb-12"
         aria-label="관광지 목록 및 지도"
       >
+        {/* 검색 결과 개수 표시 */}
+        {keyword && (
+          <div className="mb-4 text-sm text-muted-foreground">
+            &quot;{keyword}&quot; 검색 결과: {totalCount}개
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
           {/* LIST VIEW (좌측 또는 전체) */}
           <article className="order-2 lg:order-1" aria-label="관광지 목록">

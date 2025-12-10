@@ -39,14 +39,14 @@ const Navbar = () => {
 
         {/* 데스크톱 네비게이션 */}
         <div className="hidden lg:flex lg:items-center lg:gap-6">
-          {/* 검색 아이콘 (Phase 2에서 기능 구현) */}
-          <Link
-            href="/"
+          {/* 검색 아이콘 (검색 영역으로 스크롤) */}
+          <a
+            href="#search-section"
             className="flex items-center justify-center rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-            aria-label="검색"
+            aria-label="검색 영역으로 이동"
           >
             <Search className="h-5 w-5" />
-          </Link>
+          </a>
 
           {/* 네비게이션 링크 */}
           <div className="flex items-center gap-1">
@@ -96,14 +96,14 @@ const Navbar = () => {
 
         {/* 모바일 메뉴 */}
         <div className="flex items-center gap-2 lg:hidden">
-          {/* 검색 아이콘 (모바일) */}
-          <Link
-            href="/"
+          {/* 검색 아이콘 (검색 영역으로 스크롤) */}
+          <a
+            href="#search-section"
             className="flex items-center justify-center rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-            aria-label="검색"
+            aria-label="검색 영역으로 이동"
           >
             <Search className="h-5 w-5" />
-          </Link>
+          </a>
 
           {/* 인증 버튼 (모바일) */}
           <SignedOut>
