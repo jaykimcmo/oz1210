@@ -150,10 +150,14 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
       {/* CONTENT SECTION: LIST + MAP */}
       <TourContentSection
-        tours={tours}
+        initialTours={tours}
         error={error}
         keyword={keyword}
+        areaCode={areaCode}
+        contentTypeId={contentTypeId}
+        sort={sort}
         totalCount={totalCount}
+        numOfRows={20}
       />
     </main>
   );

@@ -32,6 +32,7 @@ interface NaverMapProps {
   onMarkerClick?: (tour: TourItem) => void;
   onMapClick?: () => void;
   className?: string;
+  resetMarkers?: boolean; // 필터 변경 시 마커 리셋 플래그
 }
 
 /**
@@ -49,11 +50,13 @@ export function NaverMap({
   onMarkerClick,
   onMapClick,
   className,
+  resetMarkers = false,
 }: NaverMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<naver.maps.Map | null>(null);
   const markersRef = useRef<naver.maps.Marker[]>([]);
   const infoWindowRef = useRef<naver.maps.InfoWindow | null>(null);
+  const processedTourIdsRef = useRef<Set<string>>(new Set());
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -61,6 +64,20 @@ export function NaverMap({
   const ncpKeyId =
     process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID ||
     process.env.NEXT_PUBLIC_NAVER_MAP_NCP_KEY_ID;
+
+  // 필터 변경 시 마커 리셋
+  useEffect(() => {
+    if (resetMarkers) {
+      // 기존 마커 제거 (ref 값을 변수에 복사하여 사용)
+      const currentMarkers = markersRef.current;
+      const currentProcessedIds = processedTourIdsRef.current;
+      currentMarkers.forEach((marker) => {
+        marker.setMap(null);
+      });
+      markersRef.current = [];
+      currentProcessedIds.clear();
+    }
+  }, [resetMarkers]);
 
   // 지도 초기화
   useEffect(() => {
@@ -142,13 +159,45 @@ export function NaverMap({
         }
       }
 
-      // 마커 생성
-      const markers: naver.maps.Marker[] = [];
+      // 마커 생성 또는 업데이트
       const infoWindow = new naver.maps.InfoWindow();
       let validMarkerCount = 0;
       let invalidMarkerCount = 0;
+      const newMarkers: naver.maps.Marker[] = [];
 
+      // 새로 추가된 관광지만 마커로 생성 (무한 스크롤 지원)
       tours.forEach((tour) => {
+        // 이미 처리된 관광지는 건너뛰기
+        if (processedTourIdsRef.current.has(tour.contentid)) {
+          // 기존 마커 찾기
+          const existingMarker = markersRef.current.find((m) => {
+            const markerPos = m.getPosition();
+            try {
+              const [lng, lat] = convertKATECToWGS84(tour.mapx, tour.mapy);
+              return (
+                Math.abs(markerPos.lat() - lat) < 0.0001 &&
+                Math.abs(markerPos.lng() - lng) < 0.0001
+              );
+            } catch {
+              return false;
+            }
+          });
+
+          if (existingMarker) {
+            // 선택된 관광지인 경우 zIndex 업데이트
+            if (selectedTourId === tour.contentid) {
+              existingMarker.setZIndex(1000);
+            } else {
+              existingMarker.setZIndex(0);
+            }
+            newMarkers.push(existingMarker);
+          }
+          return;
+        }
+
+        // 새 관광지 처리
+        processedTourIdsRef.current.add(tour.contentid);
+
         try {
           const [lng, lat] = convertKATECToWGS84(tour.mapx, tour.mapy);
 
@@ -202,7 +251,7 @@ export function NaverMap({
             }
           });
 
-          markers.push(marker);
+          newMarkers.push(marker);
           validMarkerCount++;
         } catch (err) {
           invalidMarkerCount++;
@@ -213,22 +262,46 @@ export function NaverMap({
         }
       });
 
+      // 기존 마커 중 tours에 없는 마커 제거
+      markersRef.current.forEach((marker) => {
+        const markerPos = marker.getPosition();
+        const exists = tours.some((tour) => {
+          try {
+            const [lng, lat] = convertKATECToWGS84(tour.mapx, tour.mapy);
+            return (
+              Math.abs(markerPos.lat() - lat) < 0.0001 &&
+              Math.abs(markerPos.lng() - lng) < 0.0001
+            );
+          } catch {
+            return false;
+          }
+        });
+
+        if (!exists) {
+          marker.setMap(null);
+        }
+      });
+
+      markersRef.current = newMarkers;
+      infoWindowRef.current = infoWindow;
+
       // 개발 환경에서만 마커 생성 통계 출력
       if (process.env.NODE_ENV === 'development' && tours.length > 0) {
         console.log(
-          `[NaverMap] 마커 생성 완료: ${validMarkerCount}/${tours.length} (실패: ${invalidMarkerCount})`,
+          `[NaverMap] 마커 업데이트 완료: 총 ${newMarkers.length}개 (새로 추가: ${validMarkerCount}, 실패: ${invalidMarkerCount})`,
         );
       }
 
-      markersRef.current = markers;
-      infoWindowRef.current = infoWindow;
-
       // 정리 함수
       return () => {
-        // 마커 제거
-        markers.forEach((marker) => {
+        // 마커 제거 (ref 값을 변수에 복사하여 사용)
+        const currentMarkers = markersRef.current;
+        const currentProcessedIds = processedTourIdsRef.current;
+        currentMarkers.forEach((marker) => {
           marker.setMap(null);
         });
+        markersRef.current = [];
+        currentProcessedIds.clear();
         // 인포윈도우 닫기
         infoWindow.close();
         // 지도 제거
@@ -267,6 +340,15 @@ export function NaverMap({
       });
 
       if (marker && infoWindowRef.current) {
+        // 선택된 마커의 zIndex 업데이트
+        markersRef.current.forEach((m) => {
+          if (m === marker) {
+            m.setZIndex(1000);
+          } else {
+            m.setZIndex(0);
+          }
+        });
+
         const infoContent = `
           <div style="padding: 12px; min-width: 200px; max-width: 300px;">
             <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600;">

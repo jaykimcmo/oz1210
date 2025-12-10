@@ -19,35 +19,170 @@
 
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type { TourItem } from '@/lib/types/tour';
 import { TourList } from './tour-list';
 import { NaverMap } from './naver-map';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { List, MapPin } from 'lucide-react';
+import { fetchAreaBasedList, fetchSearchKeyword } from '@/actions/tour-actions';
 
 interface TourContentSectionProps {
-  tours: TourItem[];
+  initialTours: TourItem[];
   error: Error | null;
   keyword?: string;
+  areaCode?: string;
+  contentTypeId?: string;
+  sort?: 'name' | 'latest';
   totalCount?: number;
+  numOfRows?: number;
 }
 
 /**
  * 관광지 목록 및 지도 섹션 컴포넌트
  *
- * @param tours - 관광지 목록
+ * @param initialTours - 초기 관광지 목록 (첫 페이지)
  * @param error - 에러 객체
- * @param keyword - 검색 키워드 (검색 결과 개수 표시용)
- * @param totalCount - 전체 개수 (검색 결과 개수 표시용)
+ * @param keyword - 검색 키워드
+ * @param areaCode - 지역코드
+ * @param contentTypeId - 콘텐츠 타입 ID
+ * @param sort - 정렬 옵션
+ * @param totalCount - 전체 개수
+ * @param numOfRows - 페이지당 항목 수
  */
 export function TourContentSection({
-  tours,
-  error,
+  initialTours,
+  error: initialError,
   keyword,
+  areaCode,
+  contentTypeId,
+  sort = 'latest',
   totalCount = 0,
+  numOfRows = 20,
 }: TourContentSectionProps) {
   const [selectedTourId, setSelectedTourId] = useState<string | undefined>();
+  const [tours, setTours] = useState<TourItem[]>(initialTours);
+  const [error, setError] = useState<Error | null>(initialError);
+  const [isLoading, setIsLoading] = useState(false);
+  const [pageNo, setPageNo] = useState(1);
+  const [hasMore, setHasMore] = useState(
+    initialTours.length < totalCount && totalCount > 0,
+  );
+  const [resetMapMarkers, setResetMapMarkers] = useState(false);
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  // 필터 파라미터가 변경되면 데이터 리셋
+  useEffect(() => {
+    setTours(initialTours);
+    setPageNo(1);
+    setHasMore(initialTours.length < totalCount && totalCount > 0);
+    setError(initialError);
+    // 지도 마커 리셋 플래그 설정
+    setResetMapMarkers(true);
+    // 다음 렌더링에서 플래그 리셋
+    setTimeout(() => setResetMapMarkers(false), 0);
+  }, [initialTours, totalCount, initialError, keyword, areaCode, contentTypeId, sort]);
+
+  // 다음 페이지 로드
+  const loadNextPage = useCallback(async () => {
+    if (isLoading || !hasMore) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const nextPage = pageNo + 1;
+      let result;
+
+      if (keyword) {
+        // 검색 모드
+        result = await fetchSearchKeyword({
+          keyword,
+          areaCode,
+          contentTypeId,
+          numOfRows,
+          pageNo: nextPage,
+        });
+      } else {
+        // 목록 모드
+        result = await fetchAreaBasedList({
+          areaCode,
+          contentTypeId,
+          numOfRows,
+          pageNo: nextPage,
+        });
+      }
+
+      if (result.items.length === 0) {
+        setHasMore(false);
+      } else {
+        // 클라이언트 측 정렬 처리
+        let sortedItems = result.items;
+        if (sort === 'name') {
+          sortedItems = [...sortedItems].sort((a, b) =>
+            a.title.localeCompare(b.title, 'ko'),
+          );
+        } else {
+          sortedItems = [...sortedItems].sort((a, b) => {
+            const timeA = a.modifiedtime || '0';
+            const timeB = b.modifiedtime || '0';
+            return timeB.localeCompare(timeA);
+          });
+        }
+
+        // 기존 데이터와 병합
+        setTours((prev) => {
+          const newTours = [...prev, ...sortedItems];
+          // hasMore 업데이트
+          setHasMore(newTours.length < result.totalCount);
+          return newTours;
+        });
+        setPageNo(nextPage);
+      }
+    } catch (err) {
+      console.error('[TourContentSection] 다음 페이지 로드 실패:', err);
+      setError(
+        err instanceof Error
+          ? err
+          : new Error('다음 페이지를 불러오는 중 오류가 발생했습니다.'),
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [
+    isLoading,
+    hasMore,
+    pageNo,
+    keyword,
+    areaCode,
+    contentTypeId,
+    numOfRows,
+    sort,
+  ]);
+
+  // Intersection Observer 설정
+  useEffect(() => {
+    const target = observerTarget.current;
+    if (!target || !hasMore || isLoading) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadNextPage();
+        }
+      },
+      {
+        rootMargin: '100px', // 100px 전에 미리 로드
+        threshold: 0.1,
+      },
+    );
+
+    observer.observe(target);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [hasMore, isLoading, loadNextPage]);
 
   // 관광지 클릭 핸들러
   const handleTourClick = useCallback((tour: TourItem) => {
@@ -93,6 +228,23 @@ export function TourContentSection({
             selectedTourId={selectedTourId}
             onTourClick={handleTourClick}
           />
+          {/* 무한 스크롤 트리거 및 로딩 인디케이터 */}
+          {hasMore && (
+            <div
+              ref={observerTarget}
+              className="flex items-center justify-center py-8"
+              aria-label="다음 페이지 로딩"
+            >
+              {isLoading && (
+                <div className="flex flex-col items-center gap-2">
+                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                  <p className="text-sm text-muted-foreground">
+                    더 많은 관광지를 불러오는 중...
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </article>
 
         {/* MAP VIEW (우측) */}
@@ -102,6 +254,7 @@ export function TourContentSection({
             selectedTourId={selectedTourId}
             onMarkerClick={handleMarkerClick}
             onMapClick={handleMapClick}
+            resetMarkers={resetMapMarkers}
           />
         </aside>
       </div>
@@ -126,6 +279,23 @@ export function TourContentSection({
               selectedTourId={selectedTourId}
               onTourClick={handleTourClick}
             />
+            {/* 무한 스크롤 트리거 및 로딩 인디케이터 */}
+            {hasMore && (
+              <div
+                ref={observerTarget}
+                className="flex items-center justify-center py-8"
+                aria-label="다음 페이지 로딩"
+              >
+                {isLoading && (
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                    <p className="text-sm text-muted-foreground">
+                      더 많은 관광지를 불러오는 중...
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </TabsContent>
           <TabsContent
             value="map"
@@ -142,6 +312,7 @@ export function TourContentSection({
               selectedTourId={selectedTourId}
               onMarkerClick={handleMarkerClick}
               onMapClick={handleMapClick}
+              resetMarkers={resetMapMarkers}
             />
           </TabsContent>
         </Tabs>
