@@ -1,39 +1,110 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { RiSupabaseFill } from "react-icons/ri";
+/**
+ * @file page.tsx
+ * @description My Trip 홈페이지 - 관광지 목록
+ *
+ * 이 페이지는 전국 관광지 정보를 검색하고 조회할 수 있는 메인 페이지입니다.
+ *
+ * 주요 기능:
+ * 1. 관광지 목록 표시 (Phase 2.2)
+ * 2. 필터 및 검색 기능 (Phase 2.3)
+ * 3. 네이버 지도 연동 (Phase 2.5)
+ *
+ * 레이아웃 구조:
+ * - HERO SECTION (선택 사항)
+ * - FILTERS & CONTROLS SECTION
+ * - CONTENT SECTION (리스트 + 지도)
+ *
+ * @dependencies
+ * - components/Navbar: 헤더 네비게이션
+ * - components/Footer: 푸터
+ * - components/tour-list.tsx: 관광지 목록 컴포넌트
+ * - lib/api/tour-api.ts: getAreaBasedList 함수
+ */
 
-export default function Home() {
+import { TourList } from '@/components/tour-list';
+import { getAreaBasedList } from '@/lib/api/tour-api';
+
+export default async function HomePage() {
+  // API 호출 (Server Component)
+  let tours = [];
+  let error: Error | null = null;
+
+  try {
+    const result = await getAreaBasedList({
+      numOfRows: 20,
+      pageNo: 1,
+    });
+    tours = result.items;
+  } catch (err) {
+    error = err instanceof Error ? err : new Error('알 수 없는 오류가 발생했습니다.');
+    console.error('[HomePage] API 호출 실패:', err);
+  }
   return (
-    <main className="min-h-[calc(100vh-80px)] flex items-center px-8 py-16 lg:py-24">
-      <section className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start lg:items-center">
-        {/* 좌측: 환영 메시지 */}
-        <div className="flex flex-col gap-8">
-          <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
-            SaaS 앱 템플릿에 오신 것을 환영합니다
+    <main className="w-full" role="main">
+      {/* HERO SECTION (선택 사항) */}
+      {/* Phase 2.3에서 검색 기능 구현 시 고려 */}
+      {/* 
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="text-center">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4">
+            한국의 아름다운 관광지를 탐험하세요
           </h1>
-          <p className="text-xl lg:text-2xl text-gray-600 dark:text-gray-400 leading-relaxed">
-            Next.js, Shadcn, Clerk, Supabase, TailwindCSS로 구동되는 완전한
-            기능의 템플릿으로 다음 프로젝트를 시작하세요.
+          <p className="text-lg sm:text-xl text-muted-foreground mb-8">
+            전국 관광지 정보를 한눈에 확인하고 나만의 여행을 계획해보세요
           </p>
         </div>
+      </section>
+      */}
 
-        {/* 우측: 버튼 두 개 세로 정렬 */}
-        <div className="flex flex-col gap-6">
-          <Link href="/storage-test" className="w-full">
-            <Button className="w-full h-28 flex items-center justify-center gap-4 text-xl shadow-lg hover:shadow-xl transition-shadow">
-              <RiSupabaseFill className="w-8 h-8" />
-              <span>Storage 파일 업로드 테스트</span>
-            </Button>
-          </Link>
-          <Link href="/auth-test" className="w-full">
-            <Button
-              className="w-full h-28 flex items-center justify-center gap-4 text-xl shadow-lg hover:shadow-xl transition-shadow"
-              variant="outline"
+      {/* FILTERS & CONTROLS SECTION */}
+      {/* Phase 2.3에서 구현 예정 */}
+      <section
+        className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6"
+        aria-label="필터 및 정렬"
+      >
+        <div className="flex flex-col gap-4">
+          {/* 필터 영역 플레이스홀더 */}
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="h-10 w-32 rounded-md bg-muted animate-pulse" />
+            <div className="h-10 w-32 rounded-md bg-muted animate-pulse" />
+            <div className="h-10 w-24 rounded-md bg-muted animate-pulse" />
+          </div>
+          {/* 필터 적용 상태 표시 영역 */}
+          <div className="flex flex-wrap gap-2">
+            {/* 선택된 필터 표시 영역 (Phase 2.3에서 구현) */}
+          </div>
+        </div>
+      </section>
+
+      {/* CONTENT SECTION: LIST + MAP */}
+      {/* Phase 2.2 (목록), Phase 2.5 (지도)에서 구현 예정 */}
+      <section
+        className="container mx-auto px-4 sm:px-6 lg:px-8 pb-8 sm:pb-12"
+        aria-label="관광지 목록 및 지도"
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+          {/* LIST VIEW (좌측 또는 전체) */}
+          <article className="order-2 lg:order-1" aria-label="관광지 목록">
+            {/* 관광지 목록 영역 */}
+            <TourList tours={tours} error={error} />
+          </article>
+
+          {/* MAP VIEW (우측 또는 탭) */}
+          <aside className="order-1 lg:order-2" aria-label="지도">
+            {/* 네이버 지도 영역 (Phase 2.5에서 구현) */}
+            <div
+              className="flex flex-col items-center justify-center min-h-[400px] lg:min-h-[600px] rounded-lg border border-dashed bg-muted/20"
+              role="status"
+              aria-live="polite"
             >
-              <RiSupabaseFill className="w-8 h-8" />
-              <span>Clerk + Supabase 인증 연동</span>
-            </Button>
-          </Link>
+              <p className="text-sm text-muted-foreground">
+                네이버 지도가 여기에 표시됩니다
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Phase 2.5에서 구현 예정
+              </p>
+            </div>
+          </aside>
         </div>
       </section>
     </main>
