@@ -29,6 +29,8 @@ interface TourListProps {
   isLoading?: boolean;
   error?: Error | null;
   onRetry?: () => void;
+  selectedTourId?: string;
+  onTourClick?: (tour: TourItem) => void;
 }
 
 /**
@@ -38,12 +40,16 @@ interface TourListProps {
  * @param isLoading - 로딩 상태
  * @param error - 에러 객체
  * @param onRetry - 재시도 함수
+ * @param selectedTourId - 선택된 관광지 ID
+ * @param onTourClick - 관광지 클릭 콜백
  */
 export function TourList({
   tours,
   isLoading = false,
   error = null,
   onRetry,
+  selectedTourId,
+  onTourClick,
 }: TourListProps) {
   // 로딩 상태
   if (isLoading) {
@@ -82,8 +88,16 @@ export function TourList({
       role="list"
     >
       {tours.map((tour) => (
-        <div key={tour.contentid} role="listitem">
-          <TourCard tour={tour} />
+        <div
+          key={tour.contentid}
+          role="listitem"
+          data-tour-id={tour.contentid}
+        >
+          <TourCard
+            tour={tour}
+            isSelected={selectedTourId === tour.contentid}
+            onCardClick={onTourClick}
+          />
         </div>
       ))}
     </div>

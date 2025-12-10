@@ -27,14 +27,22 @@ import { cn } from '@/lib/utils';
 
 interface TourCardProps {
   tour: TourItem;
+  isSelected?: boolean;
+  onCardClick?: (tour: TourItem) => void;
 }
 
 /**
  * 관광지 카드 컴포넌트
  *
  * @param tour - 관광지 정보
+ * @param isSelected - 선택된 상태
+ * @param onCardClick - 카드 클릭 콜백 (지도 이동용)
  */
-export function TourCard({ tour }: TourCardProps) {
+export function TourCard({
+  tour,
+  isSelected = false,
+  onCardClick,
+}: TourCardProps) {
   // 이미지 URL 결정 (firstimage 우선, 없으면 firstimage2, 둘 다 없으면 null)
   const imageUrl = tour.firstimage || tour.firstimage2 || null;
 
@@ -50,15 +58,25 @@ export function TourCard({ tour }: TourCardProps) {
   // 상세페이지 URL
   const detailUrl = `/places/${tour.contentid}`;
 
+  const handleClick = () => {
+    // 지도 이동 콜백 호출 (상세페이지 이동은 Link가 처리)
+    if (onCardClick) {
+      onCardClick(tour);
+    }
+  };
+
   return (
     <Link
       href={detailUrl}
+      onClick={handleClick}
       className={cn(
         'group flex flex-col overflow-hidden rounded-lg border bg-card shadow-sm',
         'transition-all duration-200 hover:scale-[1.02] hover:shadow-lg',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        isSelected && 'ring-2 ring-primary ring-offset-2',
       )}
       aria-label={`${tour.title} 상세보기`}
+      aria-current={isSelected ? 'true' : undefined}
     >
       {/* 이미지 영역 */}
       <div className="relative aspect-video w-full overflow-hidden bg-muted">

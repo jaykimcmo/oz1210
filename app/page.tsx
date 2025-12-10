@@ -22,7 +22,7 @@
  * - lib/api/tour-api.ts: getAreaCode, getAreaBasedList 함수
  */
 
-import { TourList } from '@/components/tour-list';
+import { TourContentSection } from '@/components/tour-content-section';
 import { TourFilters } from '@/components/tour-filters';
 import { TourSearch } from '@/components/tour-search';
 import { getAreaCode, getAreaBasedList, searchKeyword } from '@/lib/api/tour-api';
@@ -149,43 +149,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       </section>
 
       {/* CONTENT SECTION: LIST + MAP */}
-      {/* Phase 2.2 (목록), Phase 2.5 (지도)에서 구현 예정 */}
-      <section
-        className="container mx-auto px-4 sm:px-6 lg:px-8 pb-8 sm:pb-12"
-        aria-label="관광지 목록 및 지도"
-      >
-        {/* 검색 결과 개수 표시 */}
-        {keyword && (
-          <div className="mb-4 text-sm text-muted-foreground">
-            &quot;{keyword}&quot; 검색 결과: {totalCount}개
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-          {/* LIST VIEW (좌측 또는 전체) */}
-          <article className="order-2 lg:order-1" aria-label="관광지 목록">
-            {/* 관광지 목록 영역 */}
-            <TourList tours={tours} error={error} />
-          </article>
-
-          {/* MAP VIEW (우측 또는 탭) */}
-          <aside className="order-1 lg:order-2" aria-label="지도">
-            {/* 네이버 지도 영역 (Phase 2.5에서 구현) */}
-            <div
-              className="flex flex-col items-center justify-center min-h-[400px] lg:min-h-[600px] rounded-lg border border-dashed bg-muted/20"
-              role="status"
-              aria-live="polite"
-            >
-              <p className="text-sm text-muted-foreground">
-                네이버 지도가 여기에 표시됩니다
-              </p>
-              <p className="text-xs text-muted-foreground mt-2">
-                Phase 2.5에서 구현 예정
-              </p>
-            </div>
-          </aside>
-        </div>
-      </section>
+      <TourContentSection
+        tours={tours}
+        error={error}
+        keyword={keyword}
+        totalCount={totalCount}
+      />
     </main>
   );
 }

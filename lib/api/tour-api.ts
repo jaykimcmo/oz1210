@@ -321,6 +321,26 @@ export async function getAreaBasedList(
   });
   const items = extractItems(response as unknown as TourApiResponse<TourItem>);
   const totalCount = extractTotalCount(response as unknown as TourApiResponse<TourItem>);
+
+  // 개발 환경에서 좌표 값 형식 확인 (디버깅)
+  if (process.env.NODE_ENV === 'development' && items.length > 0) {
+    const sampleItems = items.slice(0, 5); // 처음 5개만 샘플로
+    console.group('[Tour API] 좌표 값 형식 확인 (샘플)');
+    sampleItems.forEach((item, index) => {
+      console.log(`[${index + 1}] ${item.title}:`, {
+        mapx: item.mapx,
+        mapy: item.mapy,
+        mapxType: typeof item.mapx,
+        mapyType: typeof item.mapy,
+        mapxLength: item.mapx?.length,
+        mapyLength: item.mapy?.length,
+        mapxNum: Number(item.mapx),
+        mapyNum: Number(item.mapy),
+      });
+    });
+    console.groupEnd();
+  }
+
   return { items, totalCount };
 }
 
@@ -364,6 +384,26 @@ export async function searchKeyword(
   });
   const items = extractItems(response as unknown as TourApiResponse<TourItem>);
   const totalCount = extractTotalCount(response as unknown as TourApiResponse<TourItem>);
+
+  // 개발 환경에서 좌표 값 형식 확인 (디버깅)
+  if (process.env.NODE_ENV === 'development' && items.length > 0) {
+    const sampleItems = items.slice(0, 5); // 처음 5개만 샘플로
+    console.group('[Tour API] 좌표 값 형식 확인 (검색 결과 샘플)');
+    sampleItems.forEach((item, index) => {
+      console.log(`[${index + 1}] ${item.title}:`, {
+        mapx: item.mapx,
+        mapy: item.mapy,
+        mapxType: typeof item.mapx,
+        mapyType: typeof item.mapy,
+        mapxLength: item.mapx?.length,
+        mapyLength: item.mapy?.length,
+        mapxNum: Number(item.mapx),
+        mapyNum: Number(item.mapy),
+      });
+    });
+    console.groupEnd();
+  }
+
   return { items, totalCount };
 }
 
