@@ -280,9 +280,9 @@ export default async function DetailPage({ params }: DetailPageProps) {
     <main className="w-full" role="main">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* 뒤로가기 버튼 및 액션 버튼들 */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           <BackButton />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 sm:gap-3">
             <BookmarkButton contentId={detail.contentid} />
             <ShareButton />
           </div>
@@ -320,11 +320,11 @@ function BackButton() {
       <Button
         variant="ghost"
         size="sm"
-        className="flex items-center gap-2"
+        className="flex items-center gap-2 min-h-[44px] min-w-[44px] sm:min-w-auto"
         aria-label="이전 페이지로 돌아가기"
       >
-        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-        <span>뒤로가기</span>
+        <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
+        <span className="hidden sm:inline">뒤로가기</span>
       </Button>
     </Link>
   );

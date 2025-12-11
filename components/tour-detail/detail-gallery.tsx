@@ -55,7 +55,7 @@ export function DetailGallery({ images, title }: DetailGalleryProps) {
   const hasMultipleImages = images.length > 1;
 
   return (
-    <section aria-label="이미지 갤러리" className="space-y-4 pt-6 border-t">
+    <section aria-label="이미지 갤러리" className="space-y-6 pt-6 border-t">
       <h2 className="text-2xl font-semibold mb-4">이미지 갤러리</h2>
       {hasMultipleImages ? (
         <ImageCarousel images={images} title={title} />
@@ -190,20 +190,20 @@ function ImageCarousel({ images, title }: DetailGalleryProps) {
             <Button
               variant="outline"
               size="icon"
-              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm"
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm min-h-[44px] min-w-[44px]"
               onClick={scrollPrev}
               aria-label="이전 이미지"
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
             <Button
               variant="outline"
               size="icon"
-              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm"
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm min-h-[44px] min-w-[44px]"
               onClick={scrollNext}
               aria-label="다음 이미지"
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
           </>
         )}
@@ -263,11 +263,11 @@ function ImageCarousel({ images, title }: DetailGalleryProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute left-4 z-20 text-white hover:bg-white/20"
+                className="absolute left-4 z-20 text-white hover:bg-white/20 min-h-[44px] min-w-[44px]"
                 onClick={handleModalPrev}
                 aria-label="이전 이미지"
               >
-                <ChevronLeft className="h-8 w-8" />
+                <ChevronLeft className="h-6 w-6 sm:h-8 sm:w-8" />
               </Button>
             )}
 
@@ -289,11 +289,11 @@ function ImageCarousel({ images, title }: DetailGalleryProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-4 z-20 text-white hover:bg-white/20"
+                className="absolute right-4 z-20 text-white hover:bg-white/20 min-h-[44px] min-w-[44px]"
                 onClick={handleModalNext}
                 aria-label="다음 이미지"
               >
-                <ChevronRight className="h-8 w-8" />
+                <ChevronRight className="h-6 w-6 sm:h-8 sm:w-8" />
               </Button>
             )}
 

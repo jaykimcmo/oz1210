@@ -57,10 +57,10 @@ export function CopyAddressButton({ address, className }: CopyAddressButtonProps
       variant="ghost"
       size="sm"
       onClick={handleCopy}
-      className={className}
+      className={`min-h-[44px] min-w-[44px] ${className || ''}`}
       aria-label="주소 복사"
     >
-      <Copy className="h-4 w-4" aria-hidden="true" />
+      <Copy className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
       <span className="sr-only">주소 복사</span>
     </Button>
   );

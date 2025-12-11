@@ -45,7 +45,7 @@ export function DetailRecommendations({
   }
 
   return (
-    <section aria-label="추천 관광지" className="space-y-4 pt-6 border-t">
+    <section aria-label="추천 관광지" className="space-y-6 pt-6 border-t">
       <h2 className="text-2xl font-semibold mb-4">이런 관광지는 어때요?</h2>
       <div
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"

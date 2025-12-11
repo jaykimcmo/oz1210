@@ -109,10 +109,10 @@ export function BookmarkButton({ contentId, className }: BookmarkButtonProps) {
         variant="ghost"
         size="sm"
         disabled
-        className={className}
+        className={`min-h-[44px] min-w-[44px] ${className || ''}`}
         aria-label="북마크"
       >
-        <Star className="h-4 w-4 opacity-50" aria-hidden="true" />
+        <Star className="h-4 w-4 sm:h-5 sm:w-5 opacity-50" aria-hidden="true" />
         <span className="sr-only">북마크</span>
       </Button>
     );
@@ -127,13 +127,13 @@ export function BookmarkButton({ contentId, className }: BookmarkButtonProps) {
           size="sm"
           onClick={handleToggle}
           disabled={isToggling}
-          className={className}
+          className={`min-h-[44px] min-w-[44px] ${className || ''}`}
           aria-label={isBookmarked ? '북마크 제거' : '북마크 추가'}
         >
           {isBookmarked ? (
-            <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" aria-hidden="true" />
+            <Star className="h-4 w-4 sm:h-5 sm:w-5 fill-yellow-500 text-yellow-500" aria-hidden="true" />
           ) : (
-            <StarOff className="h-4 w-4" aria-hidden="true" />
+            <StarOff className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
           )}
           <span className="sr-only">{isBookmarked ? '북마크 제거' : '북마크 추가'}</span>
         </Button>
@@ -145,10 +145,10 @@ export function BookmarkButton({ contentId, className }: BookmarkButtonProps) {
           <Button
             variant="ghost"
             size="sm"
-            className={className}
+            className={`min-h-[44px] min-w-[44px] ${className || ''}`}
             aria-label="로그인하여 북마크 추가"
           >
-            <StarOff className="h-4 w-4" aria-hidden="true" />
+            <StarOff className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
             <span className="sr-only">로그인하여 북마크 추가</span>
           </Button>
         </SignInButton>

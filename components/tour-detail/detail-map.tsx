@@ -193,7 +193,7 @@ export function DetailMap({ detail }: DetailMapProps) {
   // 에러 상태
   if (error) {
     return (
-      <section aria-label="지도" className="space-y-4 pt-6 border-t">
+      <section aria-label="지도" className="space-y-6 pt-6 border-t">
         <h2 className="text-2xl font-semibold mb-4">위치</h2>
         <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-center">
           <p className="text-sm text-destructive">{error}</p>
@@ -213,7 +213,7 @@ export function DetailMap({ detail }: DetailMapProps) {
         }}
       />
 
-      <section aria-label="지도" className="space-y-4 pt-6 border-t">
+      <section aria-label="지도" className="space-y-6 pt-6 border-t">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-semibold">위치</h2>
           {/* 길찾기 버튼 */}
@@ -221,7 +221,7 @@ export function DetailMap({ detail }: DetailMapProps) {
             variant="outline"
             size="sm"
             asChild
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 min-h-[44px]"
           >
             <a
               href={getDirectionsUrl()}
@@ -229,7 +229,7 @@ export function DetailMap({ detail }: DetailMapProps) {
               rel="noopener noreferrer"
               aria-label="네이버 지도에서 길찾기"
             >
-              <Navigation className="h-4 w-4" aria-hidden="true" />
+              <Navigation className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
               <span>길찾기</span>
             </a>
           </Button>
@@ -258,10 +258,10 @@ export function DetailMap({ detail }: DetailMapProps) {
               variant="ghost"
               size="sm"
               onClick={handleCopyCoordinates}
-              className="h-auto p-1"
+              className="h-auto p-2 min-h-[44px] min-w-[44px]"
               aria-label="좌표 복사"
             >
-              <Copy className="h-3 w-3" aria-hidden="true" />
+              <Copy className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
             </Button>
           </div>
         )}

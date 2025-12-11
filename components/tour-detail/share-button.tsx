@@ -63,10 +63,10 @@ export function ShareButton({ className }: ShareButtonProps) {
       variant="ghost"
       size="sm"
       onClick={handleShare}
-      className={className}
+      className={`min-h-[44px] min-w-[44px] ${className || ''}`}
       aria-label="페이지 공유하기"
     >
-      <Share2 className="h-4 w-4" aria-hidden="true" />
+      <Share2 className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
       <span className="sr-only">페이지 공유하기</span>
     </Button>
   );
