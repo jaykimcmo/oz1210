@@ -1,8 +1,11 @@
+'use client';
+
 /**
  * @file tour-card.tsx
- * @description 관광지 카드 컴포넌트
+ * @description 관광지 카드 컴포넌트 (Client Component)
  *
  * 이 컴포넌트는 개별 관광지 정보를 카드 형태로 표시합니다.
+ * Link와 onClick 핸들러를 사용하므로 클라이언트 컴포넌트로 구현되었습니다.
  *
  * 주요 기능:
  * 1. 썸네일 이미지 표시 (기본 이미지 fallback)

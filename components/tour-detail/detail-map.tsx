@@ -44,11 +44,6 @@ interface DetailMapProps {
  * @param detail - 관광지 상세 정보
  */
 export function DetailMap({ detail }: DetailMapProps) {
-  // 좌표가 없으면 섹션 숨김
-  if (!detail.mapx || !detail.mapy) {
-    return null;
-  }
-
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<naver.maps.Map | null>(null);
   const markerRef = useRef<naver.maps.Marker | null>(null);
@@ -63,6 +58,11 @@ export function DetailMap({ detail }: DetailMapProps) {
 
   // 좌표 변환
   useEffect(() => {
+    // 좌표가 없으면 처리하지 않음
+    if (!detail.mapx || !detail.mapy) {
+      return;
+    }
+
     try {
       const [lng, lat] = convertKATECToWGS84(detail.mapx, detail.mapy);
       // 변환된 좌표가 대한민국 범위 내인지 확인
@@ -79,6 +79,11 @@ export function DetailMap({ detail }: DetailMapProps) {
 
   // 지도 초기화
   useEffect(() => {
+    // 좌표가 없으면 처리하지 않음
+    if (!detail.mapx || !detail.mapy) {
+      return;
+    }
+
     if (!isLoaded || !mapRef.current || !ncpKeyId || !coordinates) {
       if (!ncpKeyId) {
         setError('네이버 지도 API 키가 설정되지 않았습니다.');
@@ -142,7 +147,12 @@ export function DetailMap({ detail }: DetailMapProps) {
       console.error('[DetailMap] 지도 초기화 실패:', err);
       setError('지도를 불러오는데 실패했습니다.');
     }
-  }, [isLoaded, ncpKeyId, coordinates, detail.title]);
+  }, [isLoaded, ncpKeyId, coordinates, detail.title, detail.mapx, detail.mapy]);
+
+  // 좌표가 없으면 섹션 숨김 (Hook 호출 이후에 체크)
+  if (!detail.mapx || !detail.mapy) {
+    return null;
+  }
 
   // 좌표 복사 기능
   const handleCopyCoordinates = async () => {

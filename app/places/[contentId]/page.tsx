@@ -34,17 +34,18 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { getDetailCommon, getDetailIntro, getDetailImage, getDetailPetTour } from '@/lib/api/tour-api';
-import { TourApiError, NetworkError } from '@/lib/api/tour-api';
+import { getDetailCommon, getDetailIntro, getDetailImage, getDetailPetTour, getAreaBasedList } from '@/lib/api/tour-api';
+import { TourApiError } from '@/lib/api/tour-api';
 import { DetailError } from '@/components/tour-detail/detail-error';
 import { DetailInfo } from '@/components/tour-detail/detail-info';
 import { DetailIntro } from '@/components/tour-detail/detail-intro';
 import { DetailGallery } from '@/components/tour-detail/detail-gallery';
 import { DetailMap } from '@/components/tour-detail/detail-map';
 import { DetailPetTour } from '@/components/tour-detail/detail-pet-tour';
+import { DetailRecommendations } from '@/components/tour-detail/detail-recommendations';
 import { ShareButton } from '@/components/tour-detail/share-button';
 import { BookmarkButton } from '@/components/bookmarks/bookmark-button';
-import type { TourDetail, TourIntro, TourImage, PetTourInfo } from '@/lib/types/tour';
+import type { TourDetail, TourIntro, TourImage, PetTourInfo, TourItem } from '@/lib/types/tour';
 
 interface DetailPageProps {
   params: Promise<{ contentId: string }>;
@@ -92,10 +93,6 @@ export async function generateMetadata({
   try {
     const detail = await getDetailCommon({
       contentId: contentId.trim(),
-      overviewYN: 'Y',
-      firstImageYN: 'Y',
-      addrinfoYN: 'N', // 메타데이터에는 주소 불필요
-      mapinfoYN: 'N', // 메타데이터에는 좌표 불필요
     });
 
     // 설명 텍스트 생성 (100자 이내)
@@ -165,10 +162,6 @@ export default async function DetailPage({ params }: DetailPageProps) {
   try {
     detail = await getDetailCommon({
       contentId: contentId.trim(),
-      overviewYN: 'Y',
-      firstImageYN: 'Y',
-      addrinfoYN: 'Y',
-      mapinfoYN: 'Y',
     });
   } catch (err) {
     // TourApiError의 NOT_FOUND 코드인 경우 404 처리
@@ -238,6 +231,41 @@ export default async function DetailPage({ params }: DetailPageProps) {
     }
   }
 
+  // 추천 관광지 조회 (선택 사항이므로 에러가 발생해도 페이지는 계속 표시)
+  let recommendations: TourItem[] = [];
+  if (detail) {
+    try {
+      // 같은 지역 또는 같은 타입의 관광지 조회 (병렬 처리)
+      const [areaTours, typeTours] = await Promise.all([
+        getAreaBasedList({
+          areaCode: detail.areacode,
+          numOfRows: 20,
+          pageNo: 1,
+        }),
+        getAreaBasedList({
+          contentTypeId: detail.contenttypeid,
+          numOfRows: 20,
+          pageNo: 1,
+        }),
+      ]);
+
+      // 병합 및 중복 제거 (contentid 기준)
+      const allTours = [...areaTours.items, ...typeTours.items];
+      const uniqueTours = Array.from(
+        new Map(allTours.map(tour => [tour.contentid, tour])).values()
+      );
+
+      // 현재 관광지 제외 및 최대 10개 선택
+      recommendations = uniqueTours
+        .filter(tour => tour.contentid !== detail.contentid)
+        .slice(0, 10);
+    } catch (err) {
+      // 추천 관광지는 선택 사항이므로 에러가 발생해도 페이지는 계속 표시
+      console.warn('[DetailPage] 추천 관광지 조회 실패:', err);
+      recommendations = [];
+    }
+  }
+
   // 에러가 발생한 경우 에러 UI 표시 (클라이언트 컴포넌트로 전환하여 재시도 기능 제공)
   if (error) {
     return <DetailError error={error} contentId={contentId.trim()} />;
@@ -272,6 +300,10 @@ export default async function DetailPage({ params }: DetailPageProps) {
           {images.length > 0 && <DetailGallery images={images} title={detail.title} />}
           {/* 지도 섹션 */}
           <DetailMap detail={detail} />
+          {/* 추천 관광지 섹션 */}
+          {recommendations.length > 0 && (
+            <DetailRecommendations recommendations={recommendations} />
+          )}
         </div>
       </div>
     </main>

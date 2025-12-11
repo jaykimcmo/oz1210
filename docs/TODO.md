@@ -350,9 +350,20 @@
     - [x] 에러 처리 (반려동물 정보는 선택 사항이므로 에러 시 null 반환, 페이지는 계속 표시)
     - [x] 접근성 (ARIA 라벨, 키보드 네비게이션)
     - [x] 다크 모드 지원
-- [ ] 추천 관광지 섹션 (선택 사항)
-  - [ ] 같은 지역 또는 타입의 다른 관광지 추천
-  - [ ] 카드 형태로 표시
+- [x] 추천 관광지 섹션 (선택 사항)
+  - [x] 같은 지역 또는 타입의 다른 관광지 추천
+  - [x] 카드 형태로 표시
+  - 추가 개발 사항
+    - [x] `components/tour-detail/detail-recommendations.tsx` 생성 (Client Component, TourCard 재사용)
+    - [x] 같은 지역(`areacode`) 또는 같은 타입(`contenttypeid`) 관광지 조회 (병렬 처리)
+    - [x] 결과 병합 및 중복 제거 (contentid 기준)
+    - [x] 현재 관광지 제외 및 최대 10개 선택
+    - [x] 반응형 그리드 레이아웃 (모바일: 1열, 태블릿: 2열, 데스크톱: 3-4열)
+    - [x] 빈 상태 처리 (추천 관광지 없을 때 섹션 숨김)
+    - [x] 에러 처리 (선택 사항이므로 에러 시 null 반환, 페이지는 계속 표시)
+    - [x] 접근성 (ARIA 라벨, role="list", role="listitem")
+    - [x] 다크 모드 지원
+    - [x] Server/Client Component 에러 처리 (`TourCard`와 `DetailRecommendations`에 `'use client'` 추가)
 - [ ] 최종 통합 및 스타일링
   - [ ] 모든 섹션 통합
   - [ ] 반응형 디자인 확인
