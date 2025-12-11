@@ -649,6 +649,15 @@
 
 ## Phase 8: 배포 준비
 
+- [x] 보안 취약점 검증 (React2Shell)
+  - [x] Next.js 버전 확인 (15.5.7 - 패치됨)
+  - [x] `npx fix-react2shell-next --check` 실행 및 검증
+  - [x] `docs/REACT2SHELL_SECURITY_RESPONSE.md` 보안 대응 문서 작성
+  - [x] `AGENTS.md` 보안 섹션 추가 및 버전 정보 업데이트
+- [x] 환경변수 가이드 작성
+  - [x] `docs/ENV_SETUP_GUIDE.md` 환경변수 설정 가이드 작성
+  - [x] 필수/선택 환경변수 목록 정리
+  - [x] Vercel 배포 시 환경변수 설정 방법 문서화
 - [ ] Vercel 배포 설정
   - [ ] Vercel 프로젝트 생성
   - [ ] GitHub 저장소 연결
@@ -663,6 +672,10 @@
   - [ ] `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
   - [ ] `CLERK_SECRET_KEY`
   - [ ] `NEXT_PUBLIC_APP_URL`
+  - [ ] `NEXT_PUBLIC_SENTRY_DSN` (선택)
+  - [ ] `SENTRY_ORG` (선택)
+  - [ ] `SENTRY_PROJECT` (선택)
+  - [ ] `SENTRY_AUTH_TOKEN` (선택)
 - [ ] 빌드 테스트
   - [ ] 로컬 빌드 테스트 (`pnpm build`)
   - [ ] Vercel Preview 배포 테스트

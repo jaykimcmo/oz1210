@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Tech Stack
 
-- **Next.js 15.5.6** with React 19 and App Router
+- **Next.js 15.5.7** with React 19 and App Router (React2Shell 패치 완료)
 - **Authentication**: Clerk (with Korean localization)
 - **Database**: Supabase (PostgreSQL)
 - **Styling**: Tailwind CSS v4 (uses `globals.css`, no config file)
@@ -208,3 +208,17 @@ const searchParams = await props.searchParams;
 - `.cursor/rules/supabase/`: Supabase 관련 규칙들
 
 주요 원칙은 이 CLAUDE.md에 통합되어 있으나, 세부사항은 해당 파일들 참고.
+
+## Security
+
+### React2Shell 취약점 대응 (2025-12-11)
+
+- **상태**: ✅ 안전 (패치 완료)
+- **Next.js 버전**: 15.5.7 (CVE-2025-55182, CVE-2025-66478 패치됨)
+- **검증 도구**: `npx fix-react2shell-next --check`
+- **상세 문서**: `docs/REACT2SHELL_SECURITY_RESPONSE.md`
+
+배포 전 취약점 검사 명령어:
+```bash
+npx fix-react2shell-next --check
+```
