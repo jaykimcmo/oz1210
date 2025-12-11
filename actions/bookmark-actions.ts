@@ -10,18 +10,23 @@
  * 2. 북마크 추가
  * 3. 북마크 제거
  * 4. 사용자 북마크 목록 조회
+ * 5. 북마크된 관광지 상세 정보 조회
  *
  * @dependencies
  * - lib/supabase/server.ts: createClerkSupabaseClient
  * - lib/supabase/service-role.ts: getServiceRoleClient (사용자 동기화용)
+ * - lib/api/tour-api.ts: getDetailCommon (관광지 상세 정보 조회)
  * - @clerk/nextjs/server: auth, clerkClient
  */
 
 'use server';
 
 import { auth, clerkClient } from '@clerk/nextjs/server';
+import { revalidatePath } from 'next/cache';
 import { createClerkSupabaseClient } from '@/lib/supabase/server';
 import { getServiceRoleClient } from '@/lib/supabase/service-role';
+import { getDetailCommon } from '@/lib/api/tour-api';
+import type { TourItem, TourDetail } from '@/lib/types/tour';
 
 /**
  * 북마크 타입 정의
@@ -254,5 +259,90 @@ export async function getUserBookmarks(): Promise<Bookmark[]> {
     console.error('[getUserBookmarks] 에러:', error);
     throw error;
   }
+}
+
+/**
+ * TourDetail을 TourItem으로 변환
+ * 북마크 목록 페이지에서 TourCard 컴포넌트를 재사용하기 위함
+ *
+ * @param detail - TourDetail 객체
+ * @returns TourItem 객체
+ */
+function tourDetailToTourItem(detail: TourDetail): TourItem {
+  return {
+    contentid: detail.contentid,
+    contenttypeid: detail.contenttypeid,
+    title: detail.title,
+    addr1: detail.addr1,
+    addr2: detail.addr2,
+    areacode: detail.areacode || '',
+    sigungucode: detail.sigungucode,
+    mapx: detail.mapx,
+    mapy: detail.mapy,
+    firstimage: detail.firstimage,
+    firstimage2: detail.firstimage2,
+    tel: detail.tel,
+    cat1: detail.cat1,
+    cat2: detail.cat2,
+    cat3: detail.cat3,
+    modifiedtime: detail.modifiedtime || '',
+    overview: detail.overview,
+  };
+}
+
+/**
+ * 북마크된 관광지 목록 조회 (상세 정보 포함)
+ * 각 북마크의 content_id로 관광지 상세 정보를 조회하여 TourItem 형태로 반환
+ *
+ * @returns 북마크된 관광지 목록 (TourItem[])
+ */
+export async function getBookmarkedTours(): Promise<TourItem[]> {
+  try {
+    // 북마크 목록 조회
+    const bookmarks = await getUserBookmarks();
+
+    if (bookmarks.length === 0) {
+      return [];
+    }
+
+    // 각 북마크의 관광지 상세 정보 병렬 조회
+    const results = await Promise.allSettled(
+      bookmarks.map((bookmark) =>
+        getDetailCommon({ contentId: bookmark.content_id }),
+      ),
+    );
+
+    // 성공한 결과만 필터링하고 TourItem으로 변환
+    const tours: TourItem[] = [];
+    for (const result of results) {
+      if (result.status === 'fulfilled') {
+        tours.push(tourDetailToTourItem(result.value));
+      } else {
+        // 실패한 항목은 로깅만 하고 스킵
+        console.warn('[getBookmarkedTours] 관광지 정보 조회 실패:', result.reason);
+      }
+    }
+
+    return tours;
+  } catch (error) {
+    console.error('[getBookmarkedTours] 에러:', error);
+    throw error;
+  }
+}
+
+/**
+ * 북마크 제거 및 목록 새로고침
+ * 북마크 목록 페이지에서 삭제 후 목록을 새로고침하기 위해 사용
+ *
+ * @param contentId - 한국관광공사 API contentid
+ * @returns 성공 여부
+ */
+export async function removeBookmarkAndRevalidate(contentId: string): Promise<boolean> {
+  const result = await removeBookmark(contentId);
+  
+  // 북마크 목록 페이지 캐시 무효화
+  revalidatePath('/bookmarks');
+  
+  return result;
 }
 
