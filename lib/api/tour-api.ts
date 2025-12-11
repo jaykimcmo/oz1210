@@ -210,12 +210,40 @@ async function fetchTourApi<T>(
         );
       }
 
-      const data = (await response.json()) as TourApiResponse<T>;
+      const data = (await response.json()) as TourApiResponse<T> | {
+        responseTime?: string;
+        resultCode?: string;
+        resultMsg?: string;
+      };
+
+      // 에러 응답 형식 처리 (responseTime이 있는 경우)
+      if ('resultCode' in data && 'resultMsg' in data && !('response' in data)) {
+        throw new TourApiError(
+          `API 오류: ${data.resultMsg || '알 수 없는 오류'}`,
+          response.status,
+          data.resultCode,
+          data.resultMsg,
+        );
+      }
+
+      const typedData = data as TourApiResponse<T>;
 
       // API 응답 헤더 확인
-      if (data.response?.header?.resultCode !== '0000') {
-        const resultCode = data.response.header.resultCode;
-        const resultMsg = data.response.header.resultMsg || '알 수 없는 오류';
+      if (!typedData.response?.header || typedData.response.header.resultCode !== '0000') {
+        const resultCode = typedData.response?.header?.resultCode;
+        const resultMsg = typedData.response?.header?.resultMsg || '알 수 없는 오류';
+
+        // 응답 형식이 잘못된 경우
+        if (!typedData.response?.header) {
+          if (process.env.NODE_ENV === 'development') {
+            console.error('[Tour API] 응답 형식 오류:', {
+              data,
+              url,
+            });
+          }
+          throw new ParseError('API 응답 형식이 올바르지 않습니다: response.header가 없습니다.');
+        }
+
         throw new TourApiError(
           `API 오류: ${resultMsg}`,
           undefined,
@@ -224,16 +252,20 @@ async function fetchTourApi<T>(
         );
       }
 
-      return data as unknown as T;
+      return typedData as unknown as T;
     } catch (error) {
       lastError = error as Error;
 
-      // ValidationError나 TourApiError는 재시도하지 않음
-      if (error instanceof ValidationError || error instanceof TourApiError) {
+      // ValidationError, TourApiError, ParseError는 재시도하지 않음
+      if (
+        error instanceof ValidationError ||
+        error instanceof TourApiError ||
+        error instanceof ParseError
+      ) {
         throw error;
       }
 
-      // 네트워크 에러나 파싱 에러는 재시도
+      // 네트워크 에러는 재시도
       if (attempt < retries) {
         const delayMs = retryDelay * Math.pow(2, attempt); // exponential backoff
         if (process.env.NODE_ENV === 'development') {
@@ -409,26 +441,15 @@ export async function searchKeyword(
 
 /**
  * 상세 정보 조회 파라미터
+ *
+ * 참고: detailCommon2 API는 Y/N 플래그 파라미터를 지원하지 않음
+ * 기본 호출로 모든 정보가 포함됨
  */
 export interface GetDetailCommonParams {
   /** 콘텐츠 ID (필수) */
   contentId: string;
   /** 콘텐츠 타입 ID */
   contentTypeId?: string;
-  /** 기본 정보 포함 여부 */
-  defaultYN?: 'Y' | 'N';
-  /** 대표 이미지 포함 여부 */
-  firstImageYN?: 'Y' | 'N';
-  /** 지역코드 포함 여부 */
-  areacodeYN?: 'Y' | 'N';
-  /** 카테고리 코드 포함 여부 */
-  catcodeYN?: 'Y' | 'N';
-  /** 주소 정보 포함 여부 */
-  addrinfoYN?: 'Y' | 'N';
-  /** 지도 정보 포함 여부 */
-  mapinfoYN?: 'Y' | 'N';
-  /** 개요 포함 여부 */
-  overviewYN?: 'Y' | 'N';
 }
 
 /**
@@ -444,13 +465,6 @@ export async function getDetailCommon(params: GetDetailCommonParams): Promise<To
   const response = await fetchTourApi<TourDetail>('/detailCommon2', {
     contentId: params.contentId,
     contentTypeId: params.contentTypeId,
-    defaultYN: params.defaultYN,
-    firstImageYN: params.firstImageYN,
-    areacodeYN: params.areacodeYN,
-    catcodeYN: params.catcodeYN,
-    addrinfoYN: params.addrinfoYN,
-    mapinfoYN: params.mapinfoYN,
-    overviewYN: params.overviewYN,
   });
 
   const items = extractItems(response as unknown as TourApiResponse<TourDetail>);

@@ -184,12 +184,28 @@
 
 ## Phase 3: 상세페이지 (`/places/[contentId]`)
 
-- [ ] 페이지 기본 구조
-  - [ ] `app/places/[contentId]/page.tsx` 생성
-    - [ ] 동적 라우팅 설정
-    - [ ] 뒤로가기 버튼 (헤더)
-    - [ ] 기본 레이아웃 구조
-    - [ ] 라우팅 테스트
+- [x] 페이지 기본 구조
+  - [x] `app/places/[contentId]/page.tsx` 생성
+    - [x] 동적 라우팅 설정 (Next.js 15 params Promise 처리)
+    - [x] 뒤로가기 버튼 (페이지 상단에 배치)
+    - [x] 기본 레이아웃 구조 (단일 컬럼, 모바일 우선)
+    - [x] 라우팅 테스트
+  - [x] `app/places/[contentId]/loading.tsx` 생성 (Skeleton UI)
+  - [x] `app/places/[contentId]/error.tsx` 생성 (에러 UI)
+  - [x] 에러 처리 구현
+    - [x] 404 처리 (`notFound()` 함수 사용)
+    - [x] API 에러 처리 (TourApiError, NetworkError 등)
+    - [x] 사용자 친화적 에러 메시지 표시
+
+**구현 중 발생한 오류 및 처리:**
+1. **`NetworkError` 발생 시 재시도 기능 부재**
+   - 원인: Server Component에서 에러 발생 시 사용자가 재시도할 수 있는 방법이 없었음
+   - 처리: `components/tour-detail/detail-error.tsx` 클라이언트 컴포넌트 생성, `router.refresh()`를 사용한 재시도 기능 제공, "다시 시도" 및 "홈으로 돌아가기" 버튼 추가
+
+2. **`TourApiError`의 `resultCode` 속성 오류**
+   - 원인: `err.code === 'NOT_FOUND'`로 체크했지만, `TourApiError` 클래스는 `resultCode` 속성을 사용함
+   - 처리: `err.resultCode === 'NOT_FOUND'`로 수정하여 404 에러를 올바르게 처리하도록 변경
+
 - [ ] 기본 정보 섹션 (MVP 2.4.1)
   - [ ] `components/tour-detail/detail-info.tsx` 생성
     - [ ] `getDetailCommon()` API 연동
