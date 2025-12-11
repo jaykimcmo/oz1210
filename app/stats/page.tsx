@@ -18,12 +18,16 @@
  * @dependencies
  * - next: Metadata, Server Component
  * - lucide-react: BarChart3 아이콘
+ * - lib/api/stats-api.ts: getStatsSummary 함수
+ * - components/stats/stats-summary.tsx: StatsSummaryCards 컴포넌트
  *
  * @see {@link /docs/PRD.md} - 통계 대시보드 요구사항
  */
 
 import type { Metadata } from 'next';
 import { BarChart3 } from 'lucide-react';
+import { getStatsSummary } from '@/lib/api/stats-api';
+import { StatsSummaryCards } from '@/components/stats/stats-summary';
 
 export const metadata: Metadata = {
   title: '통계 대시보드',
@@ -45,7 +49,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function StatsPage() {
+export default async function StatsPage() {
+  // 통계 요약 데이터 fetch
+  const summary = await getStatsSummary();
+
   return (
     <main className="w-full" role="main">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
@@ -65,14 +72,11 @@ export default function StatsPage() {
           </p>
         </section>
 
-        {/* 콘텐츠 영역 (향후 통계 컴포넌트 통합) */}
+        {/* 콘텐츠 영역 */}
         <div className="space-y-6 sm:space-y-8">
           {/* 통계 요약 카드 영역 */}
           <section aria-label="통계 요약">
-            {/* 향후 StatsSummary 컴포넌트 */}
-            <div className="rounded-lg border bg-muted/50 p-8 text-center">
-              <p className="text-muted-foreground">통계 데이터 준비 중...</p>
-            </div>
+            <StatsSummaryCards summary={summary} />
           </section>
 
           {/* 지역별 분포 차트 영역 */}
