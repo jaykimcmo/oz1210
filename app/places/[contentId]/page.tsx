@@ -8,15 +8,18 @@
  * 1. 동적 라우팅을 통한 관광지 상세 정보 표시
  * 2. 뒤로가기 버튼 제공
  * 3. 기본 레이아웃 구조 (향후 섹션 추가 예정)
+ * 4. 동적 Open Graph 메타태그 생성
  *
  * 핵심 구현 로직:
  * - Next.js 15 App Router 동적 라우팅 (`[contentId]`)
  * - Server Component로 구현하여 초기 로딩 최적화
  * - params는 Promise로 처리 (Next.js 15 요구사항)
  * - API 호출을 통한 데이터 검증 및 에러 처리
+ * - generateMetadata 함수로 동적 SEO 메타태그 생성
  *
  * @dependencies
  * - next/navigation: notFound 함수
+ * - next: Metadata 타입
  * - lib/api/tour-api.ts: getDetailCommon, getDetailIntro, getDetailImage 함수
  * - lib/types/tour.ts: TourDetail, TourIntro, TourImage 타입
  * - components/tour-detail/detail-info.tsx: 기본 정보 섹션 컴포넌트
@@ -27,6 +30,7 @@
  */
 
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -37,10 +41,105 @@ import { DetailInfo } from '@/components/tour-detail/detail-info';
 import { DetailIntro } from '@/components/tour-detail/detail-intro';
 import { DetailGallery } from '@/components/tour-detail/detail-gallery';
 import { DetailMap } from '@/components/tour-detail/detail-map';
+import { ShareButton } from '@/components/tour-detail/share-button';
 import type { TourDetail, TourIntro, TourImage } from '@/lib/types/tour';
 
 interface DetailPageProps {
   params: Promise<{ contentId: string }>;
+}
+
+/**
+ * 동적 메타데이터 생성 함수
+ * Open Graph 태그를 동적으로 생성하여 SEO 최적화
+ *
+ * @param params - 동적 라우트 파라미터 (contentId)
+ * @returns Metadata 객체
+ */
+export async function generateMetadata({
+  params,
+}: DetailPageProps): Promise<Metadata> {
+  const { contentId } = await params;
+
+  // 기본 메타데이터 (에러 발생 시 사용)
+  const defaultMetadata: Metadata = {
+    title: '관광지 정보',
+    description: '한국관광공사 관광지 정보를 확인하세요.',
+    openGraph: {
+      title: '관광지 정보 | My Trip',
+      description: '한국관광공사 관광지 정보를 확인하세요.',
+      type: 'website',
+      url: `/places/${contentId}`,
+      images: [
+        {
+          url: '/og-image.png',
+          width: 1200,
+          height: 630,
+          alt: 'My Trip',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: '관광지 정보 | My Trip',
+      description: '한국관광공사 관광지 정보를 확인하세요.',
+      images: ['/og-image.png'],
+    },
+  };
+
+  // API 호출하여 관광지 정보 조회
+  try {
+    const detail = await getDetailCommon({
+      contentId: contentId.trim(),
+      overviewYN: 'Y',
+      firstImageYN: 'Y',
+      addrinfoYN: 'N', // 메타데이터에는 주소 불필요
+      mapinfoYN: 'N', // 메타데이터에는 좌표 불필요
+    });
+
+    // 설명 텍스트 생성 (100자 이내)
+    const description =
+      detail.overview && detail.overview.trim()
+        ? detail.overview.trim().slice(0, 100) + (detail.overview.length > 100 ? '...' : '')
+        : `${detail.title} 관광지 정보를 확인하세요.`;
+
+    // 이미지 URL 결정 (firstimage 우선, 없으면 firstimage2, 둘 다 없으면 기본 이미지)
+    const imageUrl = detail.firstimage || detail.firstimage2 || '/og-image.png';
+
+    // 절대 URL 생성 (metadataBase 사용)
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const pageUrl = `${baseUrl}/places/${contentId}`;
+
+    return {
+      title: detail.title,
+      description,
+      openGraph: {
+        title: `${detail.title} | My Trip`,
+        description,
+        type: 'website',
+        url: pageUrl,
+        images: [
+          {
+            url: imageUrl.startsWith('http') ? imageUrl : `${baseUrl}${imageUrl}`,
+            width: 1200,
+            height: 630,
+            alt: detail.title,
+          },
+        ],
+        siteName: 'My Trip',
+        locale: 'ko_KR',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `${detail.title} | My Trip`,
+        description,
+        images: [imageUrl.startsWith('http') ? imageUrl : `${baseUrl}${imageUrl}`],
+      },
+    };
+  } catch (error) {
+    // API 호출 실패 시 기본 메타데이터 반환
+    console.warn('[generateMetadata] 메타데이터 생성 실패, 기본값 사용:', error);
+    return defaultMetadata;
+  }
 }
 
 /**
@@ -130,8 +229,11 @@ export default async function DetailPage({ params }: DetailPageProps) {
   return (
     <main className="w-full" role="main">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        {/* 뒤로가기 버튼 */}
-        <BackButton />
+        {/* 뒤로가기 버튼 및 공유 버튼 */}
+        <div className="flex items-center justify-between">
+          <BackButton />
+          <ShareButton />
+        </div>
 
         {/* 메인 컨텐츠 영역 */}
         <div className="mt-8 space-y-8">

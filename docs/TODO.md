@@ -279,20 +279,29 @@
     - [x] 반응형 지도 높이 (모바일: 400px, 태블릿: 450px, 데스크톱: 500px)
     - [x] 로딩 상태 표시
     - [x] 접근성 (ARIA 라벨, 키보드 네비게이션)
-- [ ] 공유 기능 (MVP 2.4.5)
-  - [ ] `components/tour-detail/share-button.tsx` 생성
-    - [ ] URL 복사 기능
-      - [ ] `navigator.clipboard.writeText()` 사용
-      - [ ] HTTPS 환경 확인
-    - [ ] 복사 완료 토스트 메시지
-    - [ ] 공유 아이콘 버튼 (Share/Link 아이콘)
-  - [ ] Open Graph 메타태그
-    - [ ] `app/places/[contentId]/page.tsx`에 Metadata 생성
-    - [ ] `og:title` - 관광지명
-    - [ ] `og:description` - 관광지 설명 (100자 이내)
-    - [ ] `og:image` - 대표 이미지 (1200x630 권장)
-    - [ ] `og:url` - 상세페이지 URL
-    - [ ] `og:type` - "website"
+- [x] 공유 기능 (MVP 2.4.5)
+  - [x] `components/tour-detail/share-button.tsx` 생성
+    - [x] URL 복사 기능
+      - [x] `navigator.clipboard.writeText()` 사용
+      - [x] HTTPS 환경 확인
+    - [x] 복사 완료 토스트 메시지
+    - [x] 공유 아이콘 버튼 (Share2 아이콘)
+  - [x] Open Graph 메타태그
+    - [x] `app/places/[contentId]/page.tsx`에 `generateMetadata` 함수 추가
+    - [x] `og:title` - 관광지명
+    - [x] `og:description` - 관광지 설명 (100자 이내)
+    - [x] `og:image` - 대표 이미지 (fallback 포함)
+    - [x] `og:url` - 상세페이지 URL
+    - [x] `og:type` - "website"
+    - [x] `twitter:card` - "summary_large_image"
+  - 추가 개발 사항
+    - [x] `generateMetadata` 함수로 동적 메타데이터 생성 (Next.js 15 Metadata API)
+    - [x] 에러 처리 (API 실패 시 기본 메타데이터 사용)
+    - [x] 이미지 URL 검증 및 fallback 처리 (firstimage → firstimage2 → 기본 이미지)
+    - [x] 설명 텍스트 길이 제한 (100자)
+    - [x] 절대 URL 생성 (NEXT_PUBLIC_APP_URL 환경변수 사용)
+    - [x] 상세페이지 상단에 공유 버튼 배치 (뒤로가기 버튼 옆)
+    - [x] 접근성 (ARIA 라벨, 키보드 네비게이션)
 - [ ] 북마크 기능 (MVP 2.4.5)
   - [ ] `components/bookmarks/bookmark-button.tsx` 생성
     - [ ] 별 아이콘 (채워짐/비어있음)
