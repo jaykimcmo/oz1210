@@ -262,14 +262,23 @@
     - [x] 이미지 로드 실패 시 에러 처리 (onError)
     - [x] 모달과 캐러셀 인덱스 동기화
     - [x] 반응형 레이아웃 및 다크 모드 지원
-- [ ] 지도 섹션 (MVP 2.4.4)
-  - [ ] `components/tour-detail/detail-map.tsx` 생성
-    - [ ] 해당 관광지 위치 표시
-    - [ ] 마커 1개 표시
-    - [ ] "길찾기" 버튼
-      - [ ] 네이버 지도 앱/웹 연동
-      - [ ] URL: `https://map.naver.com/v5/directions/{좌표}`
-    - [ ] 좌표 정보 표시 (선택 사항)
+- [x] 지도 섹션 (MVP 2.4.4)
+  - [x] `components/tour-detail/detail-map.tsx` 생성
+    - [x] 해당 관광지 위치 표시
+    - [x] 마커 1개 표시
+    - [x] "길찾기" 버튼
+      - [x] 네이버 지도 앱/웹 연동
+      - [x] URL: `https://map.naver.com/v5/directions/{좌표}`
+    - [x] 좌표 정보 표시 (선택 사항)
+  - 추가 개발 사항
+    - [x] Naver Maps API v3 (NCP) 스크립트 로드 및 초기화
+    - [x] 좌표 변환 (`convertKATECToWGS84` 함수 사용)
+    - [x] 좌표 복사 기능 (클립보드 API, toast 알림)
+    - [x] 지도 크기 조정 (ResizeObserver 사용)
+    - [x] 에러 처리 (좌표 없음, 좌표 변환 실패, API 키 없음, 지도 로드 실패)
+    - [x] 반응형 지도 높이 (모바일: 400px, 태블릿: 450px, 데스크톱: 500px)
+    - [x] 로딩 상태 표시
+    - [x] 접근성 (ARIA 라벨, 키보드 네비게이션)
 - [ ] 공유 기능 (MVP 2.4.5)
   - [ ] `components/tour-detail/share-button.tsx` 생성
     - [ ] URL 복사 기능

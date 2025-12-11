@@ -22,6 +22,7 @@
  * - components/tour-detail/detail-info.tsx: 기본 정보 섹션 컴포넌트
  * - components/tour-detail/detail-intro.tsx: 운영 정보 섹션 컴포넌트
  * - components/tour-detail/detail-gallery.tsx: 이미지 갤러리 섹션 컴포넌트
+ * - components/tour-detail/detail-map.tsx: 지도 섹션 컴포넌트
  * - components/tour-detail/detail-error.tsx: 에러 컴포넌트
  */
 
@@ -35,6 +36,7 @@ import { DetailError } from '@/components/tour-detail/detail-error';
 import { DetailInfo } from '@/components/tour-detail/detail-info';
 import { DetailIntro } from '@/components/tour-detail/detail-intro';
 import { DetailGallery } from '@/components/tour-detail/detail-gallery';
+import { DetailMap } from '@/components/tour-detail/detail-map';
 import type { TourDetail, TourIntro, TourImage } from '@/lib/types/tour';
 
 interface DetailPageProps {
@@ -139,6 +141,8 @@ export default async function DetailPage({ params }: DetailPageProps) {
           {intro && <DetailIntro intro={intro} contentTypeId={detail.contenttypeid} />}
           {/* 이미지 갤러리 섹션 */}
           {images.length > 0 && <DetailGallery images={images} title={detail.title} />}
+          {/* 지도 섹션 */}
+          <DetailMap detail={detail} />
         </div>
       </div>
     </main>
