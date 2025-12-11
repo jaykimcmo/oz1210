@@ -393,22 +393,30 @@
     - [x] 접근성 속성 추가 (ARIA 라벨, 시맨틱 HTML)
     - [x] 다크 모드 지원
     - [x] 네비게이션 연동 확인 (Navbar에 통계 링크 이미 존재)
-- [ ] 통계 데이터 수집
-  - [ ] `lib/api/stats-api.ts` 생성
-    - [ ] `getRegionStats()` - 지역별 관광지 개수 집계
-      - [ ] `areaBasedList2` API로 각 지역별 totalCount 조회
-      - [ ] 지역 코드별로 API 호출
-    - [ ] `getTypeStats()` - 타입별 관광지 개수 집계
-      - [ ] `areaBasedList2` API로 각 타입별 totalCount 조회
-      - [ ] contentTypeId별로 API 호출
-    - [ ] `getStatsSummary()` - 전체 통계 요약
-      - [ ] 전체 관광지 수
-      - [ ] Top 3 지역
-      - [ ] Top 3 타입
-      - [ ] 마지막 업데이트 시간
-    - [ ] 병렬 API 호출로 성능 최적화
-    - [ ] 에러 처리 및 재시도 로직
-    - [ ] 데이터 캐싱 (revalidate: 3600)
+- [x] 통계 데이터 수집
+  - [x] `lib/api/stats-api.ts` 생성
+    - [x] `getRegionStats()` - 지역별 관광지 개수 집계
+      - [x] `areaBasedList2` API로 각 지역별 totalCount 조회
+      - [x] 지역 코드별로 API 호출
+    - [x] `getTypeStats()` - 타입별 관광지 개수 집계
+      - [x] `areaBasedList2` API로 각 타입별 totalCount 조회
+      - [x] contentTypeId별로 API 호출
+    - [x] `getStatsSummary()` - 전체 통계 요약
+      - [x] 전체 관광지 수
+      - [x] Top 3 지역
+      - [x] Top 3 타입
+      - [x] 마지막 업데이트 시간
+    - [x] 병렬 API 호출로 성능 최적화
+    - [x] 에러 처리 및 재시도 로직
+    - [x] 데이터 캐싱 (revalidate: 3600)
+  - 추가 개발 사항
+    - [x] `getAllStats()` 함수 추가 (모든 통계 데이터 한 번에 가져오기)
+    - [x] `Promise.allSettled`로 개별 실패 허용 (부분 실패 시에도 데이터 반환)
+    - [x] `numOfRows: 1`로 최소 데이터만 요청 (totalCount만 필요)
+    - [x] 비율 계산 로직 (백분율, 소수점 첫째 자리까지)
+    - [x] Top 3 계산 로직 (개수 기준 내림차순 정렬)
+    - [x] 에러 로깅 (개발/프로덕션 환경 구분)
+    - [x] 타입 안전성 보장 (TypeScript 타입 검증)
 - [ ] 통계 요약 카드
   - [ ] `components/stats/stats-summary.tsx` 생성
     - [ ] 전체 관광지 수 표시
