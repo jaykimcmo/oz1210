@@ -452,18 +452,27 @@ export function NaverMap({
     <>
       <Script
         src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${ncpKeyId}`}
-        strategy="lazyOnload"
+        strategy="afterInteractive"
         onLoad={() => setIsLoaded(true)}
         onError={() => setError('지도 스크립트를 불러오는 중 오류가 발생했습니다.')}
       />
       <div
         ref={mapRef}
         className={cn(
-          'w-full min-h-[400px] lg:min-h-[600px] rounded-lg overflow-hidden',
+          'w-full min-h-[400px] lg:min-h-[600px] rounded-lg overflow-hidden relative',
           className,
         )}
         aria-label="네이버 지도"
-      />
+      >
+        {!isLoaded && !error && (
+          <div className="absolute inset-0 flex items-center justify-center bg-muted/20 rounded-lg">
+            <div className="flex flex-col items-center gap-2">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+              <p className="text-sm text-muted-foreground">지도를 불러오는 중...</p>
+            </div>
+          </div>
+        )}
+      </div>
     </>
   );
 }

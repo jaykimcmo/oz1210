@@ -34,16 +34,17 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { getDetailCommon, getDetailIntro, getDetailImage } from '@/lib/api/tour-api';
+import { getDetailCommon, getDetailIntro, getDetailImage, getDetailPetTour } from '@/lib/api/tour-api';
 import { TourApiError, NetworkError } from '@/lib/api/tour-api';
 import { DetailError } from '@/components/tour-detail/detail-error';
 import { DetailInfo } from '@/components/tour-detail/detail-info';
 import { DetailIntro } from '@/components/tour-detail/detail-intro';
 import { DetailGallery } from '@/components/tour-detail/detail-gallery';
 import { DetailMap } from '@/components/tour-detail/detail-map';
+import { DetailPetTour } from '@/components/tour-detail/detail-pet-tour';
 import { ShareButton } from '@/components/tour-detail/share-button';
 import { BookmarkButton } from '@/components/bookmarks/bookmark-button';
-import type { TourDetail, TourIntro, TourImage } from '@/lib/types/tour';
+import type { TourDetail, TourIntro, TourImage, PetTourInfo } from '@/lib/types/tour';
 
 interface DetailPageProps {
   params: Promise<{ contentId: string }>;
@@ -217,6 +218,26 @@ export default async function DetailPage({ params }: DetailPageProps) {
     }
   }
 
+  // 반려동물 정보 조회 (선택 사항이므로 에러가 발생해도 페이지는 계속 표시)
+  let petInfo: PetTourInfo | null = null;
+  if (detail) {
+    try {
+      petInfo = await getDetailPetTour({
+        contentId: contentId.trim(),
+      });
+    } catch (err) {
+      // 반려동물 정보는 선택 사항이므로 에러가 발생해도 페이지는 계속 표시
+      if (err instanceof TourApiError && err.resultCode === 'NOT_FOUND') {
+        // 반려동물 정보 없음 - 정상적인 경우일 수 있음
+        petInfo = null;
+      } else {
+        // 기타 에러는 로깅만
+        console.warn('[DetailPage] 반려동물 정보 조회 실패:', err);
+        petInfo = null;
+      }
+    }
+  }
+
   // 에러가 발생한 경우 에러 UI 표시 (클라이언트 컴포넌트로 전환하여 재시도 기능 제공)
   if (error) {
     return <DetailError error={error} contentId={contentId.trim()} />;
@@ -245,6 +266,8 @@ export default async function DetailPage({ params }: DetailPageProps) {
           <DetailInfo detail={detail} />
           {/* 운영 정보 섹션 */}
           {intro && <DetailIntro intro={intro} contentTypeId={detail.contenttypeid} />}
+          {/* 반려동물 정보 섹션 */}
+          {petInfo && <DetailPetTour petInfo={petInfo} />}
           {/* 이미지 갤러리 섹션 */}
           {images.length > 0 && <DetailGallery images={images} title={detail.title} />}
           {/* 지도 섹션 */}
