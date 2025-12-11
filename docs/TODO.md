@@ -459,26 +459,39 @@
     - [x] 빈 데이터 처리 (데이터 없을 때 메시지 표시)
     - [x] 병렬 데이터 fetch (Promise.all)
     - [x] loading.tsx에 RegionChartSkeleton 통합
-- [ ] 타입별 분포 차트 (Donut Chart)
-  - [ ] `components/stats/type-chart.tsx` 생성
-    - [ ] shadcn/ui Chart 컴포넌트 설치 (Pie/Donut)
-    - [ ] recharts 기반 Donut Chart 구현
-    - [ ] 타입별 비율 (백분율)
-    - [ ] 타입별 개수 표시
-    - [ ] 섹션 클릭 시 해당 타입 목록 페이지로 이동
-    - [ ] 호버 시 타입명, 개수, 비율 표시
-    - [ ] 다크/라이트 모드 지원
-    - [ ] 반응형 디자인
-    - [ ] 로딩 상태
-    - [ ] 접근성 (ARIA 라벨)
-- [ ] 페이지 통합
-  - [ ] `app/stats/page.tsx`에 모든 컴포넌트 통합
+- [x] 타입별 분포 차트 (Donut Chart)
+  - [x] `components/stats/type-chart.tsx` 생성
+    - [x] recharts 기반 Donut Chart 구현 (Pie with innerRadius)
+    - [x] 중앙에 전체 개수 표시 (Label 컴포넌트)
+    - [x] 타입별 비율 (백분율) 표시
+    - [x] 타입별 개수 표시
+    - [x] 섹션 클릭 시 해당 타입 목록 페이지로 이동 (`/?contentTypeId=`)
+    - [x] 호버 시 타입명, 개수, 비율 표시 (ChartTooltip)
+    - [x] 다크/라이트 모드 지원 (CSS 변수 사용)
+    - [x] 반응형 디자인 (모바일/태블릿/데스크톱)
+    - [x] 로딩 상태 (TypeChartSkeleton)
+    - [x] 접근성 (accessibilityLayer, ARIA 라벨)
+    - [x] 범례 표시 (ChartLegend)
+  - 추가 개발 사항
+    - [x] 8개 타입별 고유 색상 설정 (초록/파랑/빨강/노랑/보라/하늘/주황/분홍)
+    - [x] 숫자 포맷팅 (천 단위 구분자 toLocaleString)
+    - [x] 비율 포맷팅 (소수점 첫째 자리)
+    - [x] 커서 포인터 및 호버 효과
+    - [x] 빈 데이터 처리 (데이터 없을 때 메시지 표시)
+    - [x] 병렬 데이터 fetch (Promise.all)
+    - [x] loading.tsx에 TypeChartSkeleton 통합
+    - [x] 차트 + 상세 정보 목록 레이아웃 (데스크톱: 가로, 모바일: 세로)
+    - [x] 상세 정보 목록 (색상 인디케이터, 타입명, 개수, 비율 바)
+    - [x] 목록 항목 클릭 시 해당 타입 목록 페이지로 이동
+    - [x] 키보드 네비게이션 지원 (Enter/Space)
+- [x] 페이지 통합
+  - [x] `app/stats/page.tsx`에 모든 컴포넌트 통합
     - [x] 통계 요약 카드 (상단)
     - [x] 지역별 분포 차트 (중단)
-    - [ ] 타입별 분포 차트 (하단)
+    - [x] 타입별 분포 차트 (하단)
   - [x] 에러 처리 (에러 메시지 + 재시도 버튼) - `app/stats/error.tsx` 구현 완료
   - [x] 네비게이션에 통계 페이지 링크 추가 - Navbar에 이미 존재
-  - [ ] 최종 페이지 확인
+  - [x] 최종 페이지 확인
 
 ## Phase 5: 북마크 페이지 (`/bookmarks`) - 선택 사항
 

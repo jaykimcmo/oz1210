@@ -8,11 +8,13 @@
  * - components/ui/skeleton.tsx: Skeleton 컴포넌트
  * - components/stats/stats-summary.tsx: StatsSummarySkeleton 컴포넌트
  * - components/stats/region-chart.tsx: RegionChartSkeleton 컴포넌트
+ * - components/stats/type-chart.tsx: TypeChartSkeleton 컴포넌트
  */
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { StatsSummarySkeleton } from '@/components/stats/stats-summary';
 import { RegionChartSkeleton } from '@/components/stats/region-chart';
+import { TypeChartSkeleton } from '@/components/stats/type-chart';
 
 export default function StatsLoading() {
   return (
@@ -41,7 +43,7 @@ export default function StatsLoading() {
 
           {/* 타입별 분포 차트 스켈레톤 */}
           <section aria-label="타입별 분포">
-            <Skeleton className="h-64 w-full rounded-lg" />
+            <TypeChartSkeleton />
           </section>
         </div>
       </div>

@@ -26,9 +26,10 @@
 
 import type { Metadata } from 'next';
 import { BarChart3 } from 'lucide-react';
-import { getStatsSummary, getRegionStats } from '@/lib/api/stats-api';
+import { getStatsSummary, getRegionStats, getTypeStats } from '@/lib/api/stats-api';
 import { StatsSummaryCards } from '@/components/stats/stats-summary';
 import { RegionChart } from '@/components/stats/region-chart';
+import { TypeChart } from '@/components/stats/type-chart';
 
 // 동적 렌더링 강제 (빌드 시 API 호출 방지)
 export const dynamic = 'force-dynamic';
@@ -55,9 +56,10 @@ export const metadata: Metadata = {
 
 export default async function StatsPage() {
   // 통계 데이터 병렬 fetch
-  const [summary, regionStats] = await Promise.all([
+  const [summary, regionStats, typeStats] = await Promise.all([
     getStatsSummary(),
     getRegionStats(),
+    getTypeStats(),
   ]);
 
   return (
@@ -93,10 +95,7 @@ export default async function StatsPage() {
 
           {/* 타입별 분포 차트 영역 */}
           <section aria-label="타입별 분포">
-            {/* 향후 TypeChart 컴포넌트 */}
-            <div className="rounded-lg border bg-muted/50 p-8 text-center">
-              <p className="text-muted-foreground">타입별 분포 차트 준비 중...</p>
-            </div>
+            <TypeChart data={typeStats} />
           </section>
         </div>
       </div>
