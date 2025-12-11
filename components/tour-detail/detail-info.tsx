@@ -58,17 +58,34 @@ export function DetailInfo({ detail }: DetailInfoProps) {
     : detail.addr1;
 
   // 홈페이지 URL 검증 및 정규화
-  const getHomepageUrl = (url?: string): string | null => {
-    if (!url || url.trim() === '') return null;
-    const trimmed = url.trim();
-    // http:// 또는 https://가 없으면 추가
-    if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
-      return `https://${trimmed}`;
+  const parseHomepage = (
+    html?: string,
+  ): { url: string; text: string } | null => {
+    if (!html || html.trim() === '') return null;
+
+    const trimmed = html.trim();
+
+    // HTML 태그가 포함되어 있는 경우 파싱
+    // 예: 홈페이지 <a href="https://gagokspa.kr/" target="_blank">https://gagokspa.kr/</a>
+    const linkMatch = trimmed.match(/<a[^>]*href=["']([^"']+)["'][^>]*>([^<]+)<\/a>/i);
+
+    if (linkMatch) {
+      const url = linkMatch[1];
+      const text = linkMatch[2];
+      return { url, text };
     }
-    return trimmed;
+
+    // HTML 태그가 없는 경우 일반 URL로 처리
+    // http:// 또는 https://가 없으면 추가
+    let url = trimmed;
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = `https://${url}`;
+    }
+
+    return { url, text: trimmed };
   };
 
-  const homepageUrl = getHomepageUrl(detail.homepage);
+  const homepage = parseHomepage(detail.homepage);
 
   return (
     <section aria-label="기본 정보" className="space-y-6">
@@ -159,19 +176,19 @@ export function DetailInfo({ detail }: DetailInfoProps) {
         )}
 
         {/* 홈페이지 */}
-        {homepageUrl && (
+        {homepage && (
           <div className="flex items-start gap-3 sm:col-span-1 lg:col-span-2">
             <Globe className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" aria-hidden="true" />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-muted-foreground mb-1">홈페이지</p>
               <a
-                href={homepageUrl}
+                href={homepage.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-base text-primary hover:underline break-all inline-flex items-center gap-1"
                 aria-label="홈페이지 열기 (새 탭)"
               >
-                {detail.homepage?.trim() || homepageUrl}
+                {homepage.text}
                 <ExternalLink className="h-4 w-4 shrink-0" aria-hidden="true" />
               </a>
             </div>

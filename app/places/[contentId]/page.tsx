@@ -17,10 +17,11 @@
  *
  * @dependencies
  * - next/navigation: notFound 함수
- * - lib/api/tour-api.ts: getDetailCommon, getDetailIntro 함수
- * - lib/types/tour.ts: TourDetail, TourIntro 타입
+ * - lib/api/tour-api.ts: getDetailCommon, getDetailIntro, getDetailImage 함수
+ * - lib/types/tour.ts: TourDetail, TourIntro, TourImage 타입
  * - components/tour-detail/detail-info.tsx: 기본 정보 섹션 컴포넌트
  * - components/tour-detail/detail-intro.tsx: 운영 정보 섹션 컴포넌트
+ * - components/tour-detail/detail-gallery.tsx: 이미지 갤러리 섹션 컴포넌트
  * - components/tour-detail/detail-error.tsx: 에러 컴포넌트
  */
 
@@ -28,12 +29,13 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { getDetailCommon, getDetailIntro } from '@/lib/api/tour-api';
+import { getDetailCommon, getDetailIntro, getDetailImage } from '@/lib/api/tour-api';
 import { TourApiError, NetworkError } from '@/lib/api/tour-api';
 import { DetailError } from '@/components/tour-detail/detail-error';
 import { DetailInfo } from '@/components/tour-detail/detail-info';
 import { DetailIntro } from '@/components/tour-detail/detail-intro';
-import type { TourDetail, TourIntro } from '@/lib/types/tour';
+import { DetailGallery } from '@/components/tour-detail/detail-gallery';
+import type { TourDetail, TourIntro, TourImage } from '@/lib/types/tour';
 
 interface DetailPageProps {
   params: Promise<{ contentId: string }>;
@@ -96,6 +98,23 @@ export default async function DetailPage({ params }: DetailPageProps) {
     }
   }
 
+  // 이미지 목록 조회 (선택 사항이므로 에러가 발생해도 페이지는 계속 표시)
+  let images: TourImage[] = [];
+  if (detail) {
+    try {
+      images = await getDetailImage({
+        contentId: contentId.trim(),
+        imageYN: 'Y',
+        subImageYN: 'Y',
+        numOfRows: 20, // 최대 20개 이미지
+      });
+    } catch (err) {
+      // 이미지는 선택 사항이므로 에러가 발생해도 페이지는 계속 표시
+      console.warn('[DetailPage] 이미지 목록 조회 실패:', err);
+      images = [];
+    }
+  }
+
   // 에러가 발생한 경우 에러 UI 표시 (클라이언트 컴포넌트로 전환하여 재시도 기능 제공)
   if (error) {
     return <DetailError error={error} contentId={contentId.trim()} />;
@@ -118,6 +137,8 @@ export default async function DetailPage({ params }: DetailPageProps) {
           <DetailInfo detail={detail} />
           {/* 운영 정보 섹션 */}
           {intro && <DetailIntro intro={intro} contentTypeId={detail.contenttypeid} />}
+          {/* 이미지 갤러리 섹션 */}
+          {images.length > 0 && <DetailGallery images={images} title={detail.title} />}
         </div>
       </div>
     </main>

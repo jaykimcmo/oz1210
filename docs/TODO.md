@@ -226,25 +226,42 @@
     - [x] 반응형 그리드 레이아웃 (모바일: 1열, 데스크톱: 2열)
     - [x] 아이콘 기반 정보 표시 (MapPin, Phone, Globe, ExternalLink)
     - [x] 개요 섹션 구분선 및 제목 추가
-- [ ] 운영 정보 섹션 (MVP 2.4.2)
-  - [ ] `components/tour-detail/detail-intro.tsx` 생성
-    - [ ] `getDetailIntro()` API 연동
-    - [ ] 운영시간/개장시간
-    - [ ] 휴무일
-    - [ ] 이용요금
-    - [ ] 주차 가능 여부
-    - [ ] 수용인원
-    - [ ] 체험 프로그램
-    - [ ] 유모차/반려동물 동반 가능 여부
-    - [ ] 정보 없는 항목 숨김 처리
-- [ ] 이미지 갤러리 (MVP 2.4.3)
-  - [ ] `components/tour-detail/detail-gallery.tsx` 생성
-    - [ ] `getDetailImage()` API 연동
-    - [ ] 대표 이미지 + 서브 이미지들
-    - [ ] 이미지 슬라이드 기능 (Swiper 또는 캐러셀)
-    - [ ] 이미지 클릭 시 전체화면 모달
-    - [ ] 이미지 없으면 기본 이미지
-    - [ ] Next.js Image 컴포넌트 사용 (최적화)
+- [x] 운영 정보 섹션 (MVP 2.4.2)
+  - [x] `components/tour-detail/detail-intro.tsx` 생성
+    - [x] `getDetailIntro()` API 연동 (page.tsx에서 호출, props로 전달)
+    - [x] 운영시간/개장시간
+    - [x] 휴무일
+    - [x] 이용요금
+    - [x] 주차 가능 여부
+    - [x] 수용인원
+    - [x] 체험 프로그램
+    - [x] 유모차/반려동물 동반 가능 여부
+    - [x] 문의처
+    - [x] 정보 없는 항목 숨김 처리
+  - 추가 개발 사항
+    - [x] 타입별 특수 정보 표시 (문화시설, 축제, 레포츠, 숙박, 음식점)
+    - [x] 그리드 레이아웃 (모바일: 1열, 데스크톱: 2열)
+    - [x] 아이콘 기반 정보 표시 (Clock, CalendarX, CreditCard, Car, Users, Activity, Baby, PawPrint, Phone)
+    - [x] 섹션 제목 및 구분선 (공통 정보와 타입별 정보 분리)
+    - [x] 에러 처리 (운영 정보는 선택 사항이므로 에러 시 null 반환, 페이지는 계속 표시)
+- [x] 이미지 갤러리 (MVP 2.4.3)
+  - [x] `components/tour-detail/detail-gallery.tsx` 생성
+    - [x] `getDetailImage()` API 연동 (page.tsx에서 호출, props로 전달)
+    - [x] 대표 이미지 + 서브 이미지들
+    - [x] 이미지 슬라이드 기능 (embla-carousel-react 사용)
+    - [x] 이미지 클릭 시 전체화면 모달
+    - [x] 이미지 없으면 섹션 숨김 처리
+    - [x] Next.js Image 컴포넌트 사용 (최적화)
+  - 추가 개발 사항
+    - [x] embla-carousel-react 라이브러리 설치 및 통합
+    - [x] 좌우 네비게이션 버튼 (ChevronLeft, ChevronRight)
+    - [x] 키보드 네비게이션 (ArrowLeft, ArrowRight, Escape)
+    - [x] 썸네일 네비게이션 (하단 썸네일 표시, 클릭 시 이동, 현재 이미지 하이라이트)
+    - [x] 이미지 인덱스 표시 (예: 1/10)
+    - [x] 단일 이미지와 여러 이미지 구분 처리
+    - [x] 이미지 로드 실패 시 에러 처리 (onError)
+    - [x] 모달과 캐러셀 인덱스 동기화
+    - [x] 반응형 레이아웃 및 다크 모드 지원
 - [ ] 지도 섹션 (MVP 2.4.4)
   - [ ] `components/tour-detail/detail-map.tsx` 생성
     - [ ] 해당 관광지 위치 표시
