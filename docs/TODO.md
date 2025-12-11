@@ -206,19 +206,26 @@
    - 원인: `err.code === 'NOT_FOUND'`로 체크했지만, `TourApiError` 클래스는 `resultCode` 속성을 사용함
    - 처리: `err.resultCode === 'NOT_FOUND'`로 수정하여 404 에러를 올바르게 처리하도록 변경
 
-- [ ] 기본 정보 섹션 (MVP 2.4.1)
-  - [ ] `components/tour-detail/detail-info.tsx` 생성
-    - [ ] `getDetailCommon()` API 연동
-    - [ ] 관광지명 (대제목)
-    - [ ] 대표 이미지 (크게 표시)
-    - [ ] 주소 표시 및 복사 기능
-      - [ ] 클립보드 API 사용
-      - [ ] 복사 완료 토스트
-    - [ ] 전화번호 (클릭 시 전화 연결)
-    - [ ] 홈페이지 (링크)
-    - [ ] 개요 (긴 설명문)
-    - [ ] 관광 타입 및 카테고리 뱃지
-    - [ ] 정보 없는 항목 숨김 처리
+- [x] 기본 정보 섹션 (MVP 2.4.1)
+  - [x] `components/tour-detail/detail-info.tsx` 생성
+    - [x] `getDetailCommon()` API 연동 (page.tsx에서 호출, props로 전달)
+    - [x] 관광지명 (대제목)
+    - [x] 대표 이미지 (크게 표시)
+    - [x] 주소 표시 및 복사 기능
+      - [x] 클립보드 API 사용 (`components/tour-detail/copy-address-button.tsx`)
+      - [x] 복사 완료 토스트 (sonner 사용)
+    - [x] 전화번호 (클릭 시 전화 연결)
+    - [x] 홈페이지 (링크)
+    - [x] 개요 (긴 설명문)
+    - [x] 관광 타입 및 카테고리 뱃지
+    - [x] 정보 없는 항목 숨김 처리
+  - 추가 개발 사항
+    - [x] `components/tour-detail/copy-address-button.tsx` 생성 (주소 복사 클라이언트 컴포넌트)
+    - [x] 홈페이지 URL 검증 및 정규화 로직 (http:// 또는 https:// 자동 추가)
+    - [x] 우편번호 표시 기능
+    - [x] 반응형 그리드 레이아웃 (모바일: 1열, 데스크톱: 2열)
+    - [x] 아이콘 기반 정보 표시 (MapPin, Phone, Globe, ExternalLink)
+    - [x] 개요 섹션 구분선 및 제목 추가
 - [ ] 운영 정보 섹션 (MVP 2.4.2)
   - [ ] `components/tour-detail/detail-intro.tsx` 생성
     - [ ] `getDetailIntro()` API 연동

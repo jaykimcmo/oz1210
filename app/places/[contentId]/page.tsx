@@ -17,19 +17,23 @@
  *
  * @dependencies
  * - next/navigation: notFound 함수
- * - lib/api/tour-api.ts: getDetailCommon 함수
- * - lib/types/tour.ts: TourDetail 타입
- * - components/ui/error.tsx: 에러 컴포넌트
+ * - lib/api/tour-api.ts: getDetailCommon, getDetailIntro 함수
+ * - lib/types/tour.ts: TourDetail, TourIntro 타입
+ * - components/tour-detail/detail-info.tsx: 기본 정보 섹션 컴포넌트
+ * - components/tour-detail/detail-intro.tsx: 운영 정보 섹션 컴포넌트
+ * - components/tour-detail/detail-error.tsx: 에러 컴포넌트
  */
 
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { getDetailCommon } from '@/lib/api/tour-api';
+import { getDetailCommon, getDetailIntro } from '@/lib/api/tour-api';
 import { TourApiError, NetworkError } from '@/lib/api/tour-api';
 import { DetailError } from '@/components/tour-detail/detail-error';
-import type { TourDetail } from '@/lib/types/tour';
+import { DetailInfo } from '@/components/tour-detail/detail-info';
+import { DetailIntro } from '@/components/tour-detail/detail-intro';
+import type { TourDetail, TourIntro } from '@/lib/types/tour';
 
 interface DetailPageProps {
   params: Promise<{ contentId: string }>;
@@ -56,6 +60,10 @@ export default async function DetailPage({ params }: DetailPageProps) {
   try {
     detail = await getDetailCommon({
       contentId: contentId.trim(),
+      overviewYN: 'Y',
+      firstImageYN: 'Y',
+      addrinfoYN: 'Y',
+      mapinfoYN: 'Y',
     });
   } catch (err) {
     // TourApiError의 NOT_FOUND 코드인 경우 404 처리
@@ -65,6 +73,27 @@ export default async function DetailPage({ params }: DetailPageProps) {
     // 기타 에러는 에러 메시지로 표시
     error = err instanceof Error ? err : new Error('알 수 없는 오류가 발생했습니다.');
     console.error('[DetailPage] API 호출 실패:', err);
+  }
+
+  // 운영 정보 조회 (선택 사항이므로 에러가 발생해도 페이지는 계속 표시)
+  let intro: TourIntro | null = null;
+  if (detail) {
+    try {
+      intro = await getDetailIntro({
+        contentId: contentId.trim(),
+        contentTypeId: detail.contenttypeid,
+      });
+    } catch (err) {
+      // 운영 정보는 선택 사항이므로 에러가 발생해도 페이지는 계속 표시
+      if (err instanceof TourApiError && err.resultCode === 'NOT_FOUND') {
+        // 운영 정보 없음 - 정상적인 경우일 수 있음
+        intro = null;
+      } else {
+        // 기타 에러는 로깅만
+        console.warn('[DetailPage] 운영 정보 조회 실패:', err);
+        intro = null;
+      }
+    }
   }
 
   // 에러가 발생한 경우 에러 UI 표시 (클라이언트 컴포넌트로 전환하여 재시도 기능 제공)
@@ -85,17 +114,10 @@ export default async function DetailPage({ params }: DetailPageProps) {
 
         {/* 메인 컨텐츠 영역 */}
         <div className="mt-8 space-y-8">
-          {/* 기본 정보 섹션 (향후 detail-info.tsx로 분리 예정) */}
-          <section aria-label="기본 정보">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
-              {detail.title}
-            </h1>
-            {/* 향후 상세 정보 컴포넌트들이 여기에 추가됩니다 */}
-            <div className="mt-4 text-muted-foreground">
-              <p>상세 정보는 다음 단계에서 구현됩니다.</p>
-              <p className="mt-2 text-sm">Content ID: {detail.contentid}</p>
-            </div>
-          </section>
+          {/* 기본 정보 섹션 */}
+          <DetailInfo detail={detail} />
+          {/* 운영 정보 섹션 */}
+          {intro && <DetailIntro intro={intro} contentTypeId={detail.contenttypeid} />}
         </div>
       </div>
     </main>
