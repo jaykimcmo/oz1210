@@ -1,28 +1,29 @@
-- [ ] `.cursor/` 디렉토리
-  - [ ] `rules/` 커서룰
+- [x] `.cursor/` 디렉토리
+  - [x] `rules/` 커서룰 (common, supabase, web 규칙 포함)
   - [ ] `mcp.json` MCP 서버 설정
   - [ ] `dir.md` 프로젝트 디렉토리 구조
 - [ ] `.github/` 디렉토리
 - [ ] `.husky/` 디렉토리
-- [ ] `app/` 디렉토리
-  - [ ] `favicon.ico` 파일
+- [x] `app/` 디렉토리
+  - [x] `favicon.ico` 파일
   - [ ] `not-found.tsx` 파일
   - [ ] `robots.ts` 파일
   - [ ] `sitemap.ts` 파일
   - [ ] `manifest.ts` 파일
-- [ ] `supabase/` 디렉토리
-- [ ] `public/` 디렉토리
-  - [ ] `icons/` 디렉토리
-  - [ ] `logo.png` 파일
-  - [ ] `og-image.png` 파일
-- [ ] `tsconfig.json` 파일
+- [x] `supabase/` 디렉토리
+  - [x] `config.toml` 파일
+  - [x] `migrations/db.sql` 파일
+- [x] `public/` 디렉토리
+  - [x] `icons/` 디렉토리 (192x192, 256x256, 384x384, 512x512)
+  - [x] `logo.png` 파일
+  - [x] `og-image.png` 파일
+- [x] `tsconfig.json` 파일
 - [ ] `.cursorignore` 파일
-- [ ] `.gitignore` 파일
+- [x] `.gitignore` 파일
 - [ ] `.prettierignore` 파일
 - [ ] `.prettierrc` 파일
-- [ ] `tsconfig.json` 파일
-- [ ] `eslint.config.mjs` 파일
-- [ ] `AGENTS.md` 파일
+- [x] `eslint.config.mjs` 파일
+- [x] `AGENTS.md` 파일 (CLAUDE.md로 존재)
 
 # My Trip - 개발 TODO 리스트
 
@@ -417,27 +418,47 @@
     - [x] Top 3 계산 로직 (개수 기준 내림차순 정렬)
     - [x] 에러 로깅 (개발/프로덕션 환경 구분)
     - [x] 타입 안전성 보장 (TypeScript 타입 검증)
-- [ ] 통계 요약 카드
-  - [ ] `components/stats/stats-summary.tsx` 생성
-    - [ ] 전체 관광지 수 표시
-    - [ ] Top 3 지역 표시 (카드 형태)
-    - [ ] Top 3 타입 표시 (카드 형태)
-    - [ ] 마지막 업데이트 시간 표시
-    - [ ] 로딩 상태 (Skeleton UI)
-    - [ ] 카드 레이아웃 디자인
-- [ ] 지역별 분포 차트 (Bar Chart)
-  - [ ] `components/stats/region-chart.tsx` 생성
-    - [ ] shadcn/ui Chart 컴포넌트 설치 (Bar)
-    - [ ] recharts 기반 Bar Chart 구현
-    - [ ] X축: 지역명 (서울, 부산, 제주 등)
-    - [ ] Y축: 관광지 개수
-    - [ ] 상위 10개 지역 표시 (또는 전체)
-    - [ ] 바 클릭 시 해당 지역 목록 페이지로 이동
-    - [ ] 호버 시 정확한 개수 표시
-    - [ ] 다크/라이트 모드 지원
-    - [ ] 반응형 디자인
-    - [ ] 로딩 상태
-    - [ ] 접근성 (ARIA 라벨, 키보드 네비게이션)
+- [x] 통계 요약 카드
+  - [x] `components/stats/stats-summary.tsx` 생성
+    - [x] 전체 관광지 수 표시
+    - [x] Top 3 지역 표시 (카드 형태)
+    - [x] Top 3 타입 표시 (카드 형태)
+    - [x] 마지막 업데이트 시간 표시
+    - [x] 로딩 상태 (Skeleton UI)
+    - [x] 카드 레이아웃 디자인
+  - 추가 개발 사항
+    - [x] shadcn/ui Card 컴포넌트 설치
+    - [x] 전체 관광지 수 카드 (숫자 포맷팅 toLocaleString, MapPin 아이콘, 배경 장식)
+    - [x] Top 3 지역 카드 (순위 표시 메달 색상, 지역명, 개수)
+    - [x] Top 3 타입 카드 (순위 표시 메달 색상, 타입명, 개수)
+    - [x] 마지막 업데이트 시간 표시 (한국어 날짜 포맷, time 태그 사용)
+    - [x] 반응형 그리드 레이아웃 (1열/2열/3열)
+    - [x] StatsSummarySkeleton 로딩 상태 컴포넌트
+    - [x] 접근성 속성 (ARIA 라벨, 시맨틱 HTML, role="list")
+    - [x] 다크 모드 지원 (순위 뱃지 색상)
+    - [x] 페이지 통합 및 데이터 연동 (getStatsSummary)
+    - [x] 동적 렌더링 설정 (빌드 시 API 호출 방지)
+- [x] 지역별 분포 차트 (Bar Chart)
+  - [x] `components/stats/region-chart.tsx` 생성
+    - [x] shadcn/ui Chart 컴포넌트 설치 (recharts 포함)
+    - [x] recharts 기반 Bar Chart 구현
+    - [x] Y축: 지역명 (서울, 부산, 제주 등) - 수평 막대 차트
+    - [x] X축: 관광지 개수
+    - [x] 전체 17개 지역 표시 (개수 기준 내림차순)
+    - [x] 바 클릭 시 해당 지역 목록 페이지로 이동 (`/?areaCode=`)
+    - [x] 호버 시 정확한 개수 표시 (ChartTooltip)
+    - [x] 다크/라이트 모드 지원 (CSS 변수 사용)
+    - [x] 반응형 디자인 (모바일/태블릿/데스크톱 높이 조정)
+    - [x] 로딩 상태 (RegionChartSkeleton)
+    - [x] 접근성 (accessibilityLayer, ARIA 라벨)
+  - 추가 개발 사항
+    - [x] shadcn/ui Chart 컴포넌트 설치 (`components/ui/chart.tsx`)
+    - [x] 수평 막대 차트 구현 (layout="vertical")
+    - [x] 숫자 포맷팅 (천 단위 구분자 toLocaleString)
+    - [x] 커서 포인터 및 호버 효과
+    - [x] 빈 데이터 처리 (데이터 없을 때 메시지 표시)
+    - [x] 병렬 데이터 fetch (Promise.all)
+    - [x] loading.tsx에 RegionChartSkeleton 통합
 - [ ] 타입별 분포 차트 (Donut Chart)
   - [ ] `components/stats/type-chart.tsx` 생성
     - [ ] shadcn/ui Chart 컴포넌트 설치 (Pie/Donut)
@@ -452,20 +473,20 @@
     - [ ] 접근성 (ARIA 라벨)
 - [ ] 페이지 통합
   - [ ] `app/stats/page.tsx`에 모든 컴포넌트 통합
-    - [ ] 통계 요약 카드 (상단)
-    - [ ] 지역별 분포 차트 (중단)
+    - [x] 통계 요약 카드 (상단)
+    - [x] 지역별 분포 차트 (중단)
     - [ ] 타입별 분포 차트 (하단)
-  - [ ] 에러 처리 (에러 메시지 + 재시도 버튼)
-  - [ ] 네비게이션에 통계 페이지 링크 추가
+  - [x] 에러 처리 (에러 메시지 + 재시도 버튼) - `app/stats/error.tsx` 구현 완료
+  - [x] 네비게이션에 통계 페이지 링크 추가 - Navbar에 이미 존재
   - [ ] 최종 페이지 확인
 
 ## Phase 5: 북마크 페이지 (`/bookmarks`) - 선택 사항
 
-- [ ] Supabase 설정 확인
-  - [ ] `bookmarks` 테이블 확인 (db.sql 참고)
-    - [ ] `users` 테이블과의 관계 확인
-    - [ ] 인덱스 확인 (user_id, content_id, created_at)
-    - [ ] RLS 비활성화 확인 (개발 환경)
+- [x] Supabase 설정 확인
+  - [x] `bookmarks` 테이블 확인 (db.sql 참고)
+    - [x] `users` 테이블과의 관계 확인 (user_id FK → users.id, ON DELETE CASCADE)
+    - [x] 인덱스 확인 (user_id, content_id, created_at DESC)
+    - [x] RLS 비활성화 확인 (개발 환경) - DISABLE ROW LEVEL SECURITY
 - [ ] 북마크 목록 페이지
   - [ ] `app/bookmarks/page.tsx` 생성
     - [ ] 인증된 사용자만 접근 가능
@@ -492,14 +513,14 @@
 
 ## Phase 6: 최적화 & 배포
 
-- [ ] 이미지 최적화
-  - [ ] `next.config.ts` 외부 도메인 설정
-    - [ ] 한국관광공사 이미지 도메인 추가
+- [x] 이미지 최적화
+  - [x] `next.config.ts` 외부 도메인 설정
+    - [x] 한국관광공사 이미지 도메인 추가 (www.visitkorea.or.kr, api.visitkorea.or.kr, tong.visitkorea.or.kr, cdn.visitkorea.or.kr)
     - [ ] 네이버 지도 이미지 도메인 추가
-  - [ ] Next.js Image 컴포넌트 사용 확인
-    - [ ] priority 속성 (above-the-fold)
-    - [ ] lazy loading (below-the-fold)
-    - [ ] responsive sizes 설정
+  - [x] Next.js Image 컴포넌트 사용 확인
+    - [x] priority 속성 (above-the-fold)
+    - [x] lazy loading (below-the-fold)
+    - [x] responsive sizes 설정
 - [ ] 전역 에러 핸들링
   - [ ] `app/error.tsx` 생성
   - [ ] `app/global-error.tsx` 생성
@@ -533,16 +554,16 @@
 
 ## 추가 작업 (선택 사항)
 
-- [ ] 다크 모드 지원
-  - [ ] 테마 전환 기능
-  - [ ] 모든 컴포넌트 다크 모드 스타일 적용
+- [x] 다크 모드 지원
+  - [ ] 테마 전환 기능 (토글 버튼)
+  - [x] 모든 컴포넌트 다크 모드 스타일 적용 (Tailwind CSS dark: 클래스 사용)
 - [ ] PWA 지원
   - [ ] `app/manifest.ts` 생성
   - [ ] Service Worker 설정
   - [ ] 오프라인 지원
-- [ ] 접근성 개선
-  - [ ] ARIA 라벨 추가
-  - [ ] 키보드 네비게이션 개선
+- [x] 접근성 개선
+  - [x] ARIA 라벨 추가 (aria-label, role 속성 사용)
+  - [x] 키보드 네비게이션 개선 (갤러리, 지도 등)
   - [ ] 색상 대비 확인 (WCAG AA)
 - [ ] 성능 모니터링
   - [ ] Web Vitals 측정

@@ -26,7 +26,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { MapPin, Map, Tag, Clock, TrendingUp } from 'lucide-react';
+import { MapPin, Map, Tag, Clock } from 'lucide-react';
 import type { StatsSummary } from '@/lib/types/stats';
 
 interface StatsSummaryCardsProps {
