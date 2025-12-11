@@ -346,3 +346,54 @@ export async function removeBookmarkAndRevalidate(contentId: string): Promise<bo
   return result;
 }
 
+/**
+ * 여러 북마크 일괄 제거
+ * 북마크 목록 페이지에서 선택된 여러 항목을 한 번에 삭제
+ *
+ * @param contentIds - 삭제할 관광지 contentid 배열
+ * @returns 삭제 결과 (성공 개수, 실패 개수)
+ */
+export async function removeMultipleBookmarks(
+  contentIds: string[],
+): Promise<{ success: number; failed: number }> {
+  try {
+    // Clerk 인증 확인
+    const { userId } = await auth();
+
+    if (!userId) {
+      throw new Error('로그인이 필요합니다.');
+    }
+
+    if (contentIds.length === 0) {
+      return { success: 0, failed: 0 };
+    }
+
+    // Supabase User ID 조회
+    const supabaseUserId = await getSupabaseUserId(userId);
+
+    // 북마크 일괄 삭제
+    const supabase = createClerkSupabaseClient();
+    const { error, count } = await supabase
+      .from('bookmarks')
+      .delete({ count: 'exact' })
+      .eq('user_id', supabaseUserId)
+      .in('content_id', contentIds);
+
+    if (error) {
+      console.error('[removeMultipleBookmarks] 북마크 일괄 삭제 실패:', error);
+      throw new Error('북마크 삭제에 실패했습니다.');
+    }
+
+    const successCount = count ?? 0;
+    const failedCount = contentIds.length - successCount;
+
+    // 북마크 목록 페이지 캐시 무효화
+    revalidatePath('/bookmarks');
+
+    return { success: successCount, failed: failedCount };
+  } catch (error) {
+    console.error('[removeMultipleBookmarks] 에러:', error);
+    throw error;
+  }
+}
+

@@ -520,17 +520,29 @@
     - [x] 반응형 그리드 레이아웃 (1열/2열/3열/4열)
     - [x] 접근성 속성 (ARIA 라벨, role="list", role="listitem")
     - [x] 다크 모드 지원
-- [ ] 북마크 관리 기능
-  - [ ] 정렬 옵션
+- [x] 북마크 관리 기능
+  - [x] 정렬 옵션
     - [x] 최신순 (created_at DESC) - 기본 정렬로 구현됨
-    - [ ] 이름순 (가나다순)
-    - [ ] 지역별
-  - [ ] 일괄 삭제 기능
-    - [ ] 체크박스 선택
-    - [ ] 선택 항목 삭제
-    - [ ] 확인 다이얼로그
+    - [x] 이름순 (가나다순)
+    - [x] 지역별
+  - [x] 일괄 삭제 기능
+    - [x] 체크박스 선택
+    - [x] 선택 항목 삭제
+    - [x] 확인 다이얼로그
   - [x] 개별 삭제 기능
     - [x] 각 카드에 삭제 버튼
+  - 추가 개발 사항
+    - [x] AlertDialog 컴포넌트 설치 (shadcn/ui)
+    - [x] Checkbox 컴포넌트 설치 (shadcn/ui)
+    - [x] `removeMultipleBookmarks()` Server Action 추가
+    - [x] `components/bookmarks/bookmark-toolbar.tsx` 생성 (정렬/편집 UI)
+    - [x] `bookmark-card.tsx` 수정 (편집 모드 체크박스 추가)
+    - [x] `bookmark-list.tsx` 수정 (정렬/선택 상태 관리, 삭제 다이얼로그)
+    - [x] 클라이언트 측 정렬 로직 구현 (이름순: localeCompare, 지역별: AREA_CODE_NAMES)
+    - [x] 전체 선택/해제 기능
+    - [x] 삭제 중 로딩 상태
+    - [x] 접근성 속성 (ARIA 라벨)
+    - [x] 다크 모드 지원
 - [x] 페이지 통합 및 스타일링
   - [x] 반응형 디자인 확인
   - [x] 최종 페이지 확인
