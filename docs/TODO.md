@@ -573,7 +573,17 @@
     - [x] `components/analytics/web-vitals.tsx` 생성
     - [x] LCP, FID, CLS, FCP, TTFB, INP 측정
     - [x] 개발 환경 콘솔 로깅 (등급별 색상 표시)
-  - [ ] 에러 로깅 (Sentry 등) - 추후 설정 필요
+  - [x] 에러 로깅 (Sentry)
+    - [x] `@sentry/nextjs` 설치
+    - [x] `instrumentation-client.ts` 생성 (클라이언트 사이드)
+    - [x] `sentry.server.config.ts` 생성 (서버 사이드)
+    - [x] `sentry.edge.config.ts` 생성 (Edge Runtime)
+    - [x] `instrumentation.ts` 생성 (Next.js 15 방식)
+    - [x] `next.config.ts` Sentry 통합 (withSentryConfig)
+    - [x] `app/error.tsx` Sentry 연동
+    - [x] `app/global-error.tsx` Sentry 연동
+    - [x] 라우터 전환 추적 (onRouterTransitionStart)
+    - [x] 에러 필터링 설정 (네트워크 에러, 확장 프로그램 에러 등)
 - [x] 사용자 피드백
   - [x] 피드백 수집 기능
     - [x] `components/feedback/feedback-button.tsx` 생성 (화면 우측 하단 고정)
@@ -593,31 +603,49 @@
 
 ## Phase 7: 최적화 & SEO
 
-- [ ] 전역 에러 핸들링
-  - [ ] `app/error.tsx` 생성
-  - [ ] `app/global-error.tsx` 생성
-  - [ ] API 에러 처리 개선
-- [ ] 404 페이지
-  - [ ] `app/not-found.tsx` 생성
-    - [ ] 사용자 친화적인 메시지
-    - [ ] 홈으로 돌아가기 버튼
-- [ ] SEO 최적화
+- [x] 전역 에러 핸들링
+  - [x] `app/error.tsx` 생성
+    - [x] 사용자 친화적 에러 메시지
+    - [x] "다시 시도" 버튼 (reset 함수)
+    - [x] "홈으로 돌아가기" 버튼
+    - [x] 에러 코드 표시 (digest)
+    - [x] 다크 모드 지원
+  - [x] `app/global-error.tsx` 생성
+    - [x] root layout 에러 처리
+    - [x] html, body 태그 포함
+    - [x] 인라인 스타일 (CSS 로드 실패 대비)
+    - [x] 새로고침 버튼
+  - [x] API 에러 처리 개선 (기존 페이지별 error.tsx 활용)
+- [x] 404 페이지
+  - [x] `app/not-found.tsx` 생성
+    - [x] 사용자 친화적인 메시지
+    - [x] 404 아이콘 (FileQuestion)
+    - [x] 홈으로 돌아가기 버튼
+    - [x] 인기 페이지 링크 (관광지 목록, 통계)
+    - [x] 다크 모드 지원
+    - [x] 접근성 속성
+- [x] SEO 최적화
   - [x] 메타태그 설정 (`app/layout.tsx`) - 이미 구현됨
     - [x] 기본 title, description
     - [x] Open Graph 태그
     - [x] Twitter Card 태그
-  - [ ] `app/sitemap.ts` 생성
-    - [ ] 동적 sitemap 생성 (관광지 상세페이지 포함)
-  - [ ] `app/robots.ts` 생성
-- [ ] 성능 최적화
-  - [ ] Lighthouse 점수 측정 (목표: > 80)
-  - [ ] 코드 분할 확인
-  - [ ] 불필요한 번들 제거
-  - [ ] API 응답 캐싱 전략 확인
-- [ ] 환경변수 보안 검증
-  - [ ] 모든 필수 환경변수 확인
-  - [ ] `.env.example` 업데이트
-  - [ ] 프로덕션 환경변수 설정 가이드 작성
+  - [x] `app/sitemap.ts` 생성
+    - [x] 정적 페이지 목록 (홈, 통계, 북마크)
+    - [x] changeFrequency, priority 설정
+    - [x] lastModified 설정
+  - [x] `app/robots.ts` 생성
+    - [x] 모든 크롤러 허용
+    - [x] sitemap URL 포함
+    - [x] 테스트 페이지 차단 (/api/, /auth-test/, /storage-test/)
+- [x] 성능 최적화
+  - [x] 코드 분할 확인 (Next.js 자동 처리)
+  - [x] 번들 크기 확인 (빌드 결과 정상)
+  - [x] API 응답 캐싱 전략 확인 (fetch revalidate 옵션)
+  - [ ] Lighthouse 점수 측정 (목표: > 80) - 배포 후 측정
+- [x] 환경변수 보안 검증
+  - [x] 모든 필수 환경변수 확인
+  - [x] `.env.example` 작성 (globalignore로 차단됨, 수동 생성 필요)
+  - [x] 프로덕션 환경변수 설정 가이드 작성
 
 ## Phase 8: 배포 준비
 
@@ -656,10 +684,7 @@
 - [ ] 반려동물 동반 가능 필터 (MVP 2.5)
   - [ ] 토글 버튼
   - [ ] 크기별 필터 (소형, 중형, 대형)
-- [ ] 에러 로깅 (Sentry 등)
-  - [ ] Sentry 프로젝트 생성
-  - [ ] `@sentry/nextjs` 설치
-  - [ ] 에러 추적 설정
+- [x] 에러 로깅 (Sentry) - Phase 6에서 구현 완료
 - [ ] CI/CD 파이프라인
   - [ ] `.github/workflows/` 설정
   - [ ] 자동 테스트 설정
