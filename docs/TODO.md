@@ -302,24 +302,33 @@
     - [x] 절대 URL 생성 (NEXT_PUBLIC_APP_URL 환경변수 사용)
     - [x] 상세페이지 상단에 공유 버튼 배치 (뒤로가기 버튼 옆)
     - [x] 접근성 (ARIA 라벨, 키보드 네비게이션)
-- [ ] 북마크 기능 (MVP 2.4.5)
-  - [ ] `components/bookmarks/bookmark-button.tsx` 생성
-    - [ ] 별 아이콘 (채워짐/비어있음)
-    - [ ] 북마크 상태 확인 (Supabase 조회)
-    - [ ] 북마크 추가/제거 기능
-    - [ ] 인증된 사용자 확인 (Clerk)
-    - [ ] 로그인하지 않은 경우: 로그인 유도 또는 localStorage 임시 저장
-  - [ ] Supabase 연동
-    - [ ] `lib/api/supabase-api.ts` 생성
-      - [ ] `getBookmark()` - 북마크 조회
-      - [ ] `addBookmark()` - 북마크 추가
-      - [ ] `removeBookmark()` - 북마크 제거
-      - [ ] `getUserBookmarks()` - 사용자 북마크 목록
-    - [ ] `bookmarks` 테이블 사용 (db.sql 참고)
-      - [ ] `user_id` (users 테이블 참조)
-      - [ ] `content_id` (한국관광공사 API contentid)
-      - [ ] UNIQUE 제약 (user_id, content_id)
-  - [ ] 상세페이지에 북마크 버튼 추가
+- [x] 북마크 기능 (MVP 2.4.5)
+  - [x] `components/bookmarks/bookmark-button.tsx` 생성
+    - [x] 별 아이콘 (채워짐/비어있음) - Star / StarOff (lucide-react)
+    - [x] 북마크 상태 확인 (Supabase 조회)
+    - [x] 북마크 추가/제거 기능
+    - [x] 인증된 사용자 확인 (Clerk)
+    - [x] 로그인하지 않은 경우: 로그인 유도 (SignInButton 모달)
+  - [x] Supabase 연동
+    - [x] `actions/bookmark-actions.ts` 생성 (Server Actions)
+      - [x] `getBookmark()` - 북마크 조회
+      - [x] `addBookmark()` - 북마크 추가
+      - [x] `removeBookmark()` - 북마크 제거
+      - [x] `getUserBookmarks()` - 사용자 북마크 목록
+    - [x] `bookmarks` 테이블 사용 (db.sql 참고)
+      - [x] `user_id` (users 테이블 참조)
+      - [x] `content_id` (한국관광공사 API contentid)
+      - [x] UNIQUE 제약 (user_id, content_id)
+  - [x] 상세페이지에 북마크 버튼 추가
+  - 추가 개발 사항
+    - [x] Server Actions 사용 (API Routes 대신)
+    - [x] Clerk userId → Supabase users.id 매핑 로직 (clerk_id 기반)
+    - [x] 사용자 자동 동기화 (없으면 자동 생성)
+    - [x] UNIQUE 제약 에러 처리 (중복 북마크 방지)
+    - [x] 로딩 상태 및 에러 처리
+    - [x] 토스트 알림 (sonner)
+    - [x] 낙관적 업데이트 (Optimistic Update)
+    - [x] 접근성 (ARIA 라벨, 키보드 네비게이션)
 - [ ] 반려동물 정보 섹션 (MVP 2.5)
   - [ ] `components/tour-detail/detail-pet-tour.tsx` 생성
     - [ ] `getDetailPetTour()` API 연동

@@ -42,6 +42,7 @@ import { DetailIntro } from '@/components/tour-detail/detail-intro';
 import { DetailGallery } from '@/components/tour-detail/detail-gallery';
 import { DetailMap } from '@/components/tour-detail/detail-map';
 import { ShareButton } from '@/components/tour-detail/share-button';
+import { BookmarkButton } from '@/components/bookmarks/bookmark-button';
 import type { TourDetail, TourIntro, TourImage } from '@/lib/types/tour';
 
 interface DetailPageProps {
@@ -229,10 +230,13 @@ export default async function DetailPage({ params }: DetailPageProps) {
   return (
     <main className="w-full" role="main">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        {/* 뒤로가기 버튼 및 공유 버튼 */}
+        {/* 뒤로가기 버튼 및 액션 버튼들 */}
         <div className="flex items-center justify-between">
           <BackButton />
-          <ShareButton />
+          <div className="flex items-center gap-2">
+            <BookmarkButton contentId={detail.contentid} />
+            <ShareButton />
+          </div>
         </div>
 
         {/* 메인 컨텐츠 영역 */}
