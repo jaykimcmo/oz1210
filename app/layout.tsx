@@ -7,6 +7,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import { SyncUserProvider } from "@/components/providers/sync-user-provider";
+import { ThemeProvider } from "@/components/providers/theme-provider";
+import { WebVitals } from "@/components/analytics/web-vitals";
+import { FeedbackButton } from "@/components/feedback/feedback-button";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -85,18 +88,22 @@ export default function RootLayout({
         cssLayerName: "clerk", // Tailwind 4 호환성
       }}
     >
-      <html lang="ko">
+      <html lang="ko" suppressHydrationWarning>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <SyncUserProvider>
-            <div className="flex min-h-screen flex-col">
-              <Navbar />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
-            <Toaster position="bottom-right" richColors />
-          </SyncUserProvider>
+          <ThemeProvider>
+            <SyncUserProvider>
+              <div className="flex min-h-screen flex-col">
+                <Navbar />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
+              <Toaster position="bottom-right" richColors />
+              <FeedbackButton />
+              <WebVitals />
+            </SyncUserProvider>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

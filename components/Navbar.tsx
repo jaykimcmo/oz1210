@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Menu, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/theme-toggle';
 import {
   Sheet,
   SheetContent,
@@ -79,6 +80,9 @@ const Navbar = () => {
             </SignedIn>
           </div>
 
+          {/* 테마 토글 */}
+          <ThemeToggle />
+
           {/* 인증 버튼 */}
           <div className="flex items-center gap-2">
             <SignedOut>
@@ -104,6 +108,9 @@ const Navbar = () => {
           >
             <Search className="h-5 w-5" />
           </a>
+
+          {/* 테마 토글 (모바일) */}
+          <ThemeToggle />
 
           {/* 인증 버튼 (모바일) */}
           <SignedOut>

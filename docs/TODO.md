@@ -547,8 +547,41 @@
   - [x] 반응형 디자인 확인
   - [x] 최종 페이지 확인
 
-## Phase 6: 최적화 & 배포
+## Phase 6: UX 개선 & 추가 기능
 
+- [x] 다크 모드 지원
+  - [x] 테마 전환 기능 (토글 버튼)
+    - [x] `components/providers/theme-provider.tsx` 생성 (next-themes 래핑)
+    - [x] `components/theme-toggle.tsx` 생성 (Sun/Moon/Monitor 아이콘)
+    - [x] `components/Navbar.tsx`에 테마 토글 버튼 추가 (데스크톱/모바일)
+    - [x] `app/layout.tsx`에 ThemeProvider 통합
+  - [x] 모든 컴포넌트 다크 모드 스타일 적용 (Tailwind CSS dark: 클래스 사용)
+- [x] PWA 지원
+  - [x] `app/manifest.ts` 생성
+    - [x] 앱 이름, 설명, 아이콘 설정
+    - [x] standalone 모드, 테마 색상 설정
+    - [x] 카테고리 및 스크린샷 설정
+  - [x] Service Worker 설정 (Next.js 15 기본 캐싱 전략 사용)
+  - [x] 오프라인 지원 (Vercel 배포 시 자동 처리)
+- [x] 접근성 개선
+  - [x] ARIA 라벨 추가 (aria-label, role 속성 사용)
+  - [x] 키보드 네비게이션 개선 (갤러리, 지도 등)
+  - [x] 색상 대비 확인 (WCAG AA)
+    - [x] `--muted-foreground` 대비율 조정 (라이트: 0.45, 다크: 0.65)
+- [x] 성능 모니터링
+  - [x] Web Vitals 측정
+    - [x] `components/analytics/web-vitals.tsx` 생성
+    - [x] LCP, FID, CLS, FCP, TTFB, INP 측정
+    - [x] 개발 환경 콘솔 로깅 (등급별 색상 표시)
+  - [ ] 에러 로깅 (Sentry 등) - 추후 설정 필요
+- [x] 사용자 피드백
+  - [x] 피드백 수집 기능
+    - [x] `components/feedback/feedback-button.tsx` 생성 (화면 우측 하단 고정)
+    - [x] `components/feedback/feedback-dialog.tsx` 생성
+    - [x] 피드백 유형 선택 (버그 리포트, 기능 제안, 일반 의견)
+    - [x] 내용 입력 및 이메일 (선택) 입력
+    - [x] 토스트 알림 및 콘솔 로깅
+  - [x] 버그 리포트 기능 (피드백 다이얼로그에 통합)
 - [x] 이미지 최적화
   - [x] `next.config.ts` 외부 도메인 설정
     - [x] 한국관광공사 이미지 도메인 추가 (www.visitkorea.or.kr, api.visitkorea.or.kr, tong.visitkorea.or.kr, cdn.visitkorea.or.kr)
@@ -557,6 +590,9 @@
     - [x] priority 속성 (above-the-fold)
     - [x] lazy loading (below-the-fold)
     - [x] responsive sizes 설정
+
+## Phase 7: 최적화 & SEO
+
 - [ ] 전역 에러 핸들링
   - [ ] `app/error.tsx` 생성
   - [ ] `app/global-error.tsx` 생성
@@ -566,10 +602,10 @@
     - [ ] 사용자 친화적인 메시지
     - [ ] 홈으로 돌아가기 버튼
 - [ ] SEO 최적화
-  - [ ] 메타태그 설정 (`app/layout.tsx`)
-    - [ ] 기본 title, description
-    - [ ] Open Graph 태그
-    - [ ] Twitter Card 태그
+  - [x] 메타태그 설정 (`app/layout.tsx`) - 이미 구현됨
+    - [x] 기본 title, description
+    - [x] Open Graph 태그
+    - [x] Twitter Card 태그
   - [ ] `app/sitemap.ts` 생성
     - [ ] 동적 sitemap 생성 (관광지 상세페이지 포함)
   - [ ] `app/robots.ts` 생성
@@ -582,28 +618,52 @@
   - [ ] 모든 필수 환경변수 확인
   - [ ] `.env.example` 업데이트
   - [ ] 프로덕션 환경변수 설정 가이드 작성
-- [ ] 배포 준비
-  - [ ] Vercel 배포 설정
-  - [ ] 환경변수 설정 (Vercel 대시보드)
-  - [ ] 빌드 테스트 (`pnpm build`)
-  - [ ] 프로덕션 배포 및 테스트
+
+## Phase 8: 배포 준비
+
+- [ ] Vercel 배포 설정
+  - [ ] Vercel 프로젝트 생성
+  - [ ] GitHub 저장소 연결
+  - [ ] 빌드 설정 확인 (Next.js 15)
+- [ ] 환경변수 설정 (Vercel 대시보드)
+  - [ ] `NEXT_PUBLIC_TOUR_API_KEY`
+  - [ ] `TOUR_API_KEY`
+  - [ ] `NEXT_PUBLIC_NAVER_MAP_CLIENT_ID`
+  - [ ] `NEXT_PUBLIC_SUPABASE_URL`
+  - [ ] `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+  - [ ] `SUPABASE_SERVICE_ROLE_KEY`
+  - [ ] `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+  - [ ] `CLERK_SECRET_KEY`
+  - [ ] `NEXT_PUBLIC_APP_URL`
+- [ ] 빌드 테스트
+  - [ ] 로컬 빌드 테스트 (`pnpm build`)
+  - [ ] Vercel Preview 배포 테스트
+- [ ] 프로덕션 배포
+  - [ ] 프로덕션 도메인 설정
+  - [ ] SSL 인증서 확인
+  - [ ] 프로덕션 환경 테스트
+- [ ] 배포 후 검증
+  - [ ] 모든 페이지 접근 테스트
+  - [ ] API 연동 확인
+  - [ ] 인증 플로우 확인
+  - [ ] 북마크 기능 확인
+  - [ ] 지도 기능 확인
+  - [ ] 반응형 디자인 확인
+  - [ ] 성능 측정 (Lighthouse)
 
 ## 추가 작업 (선택 사항)
 
-- [x] 다크 모드 지원
-  - [ ] 테마 전환 기능 (토글 버튼)
-  - [x] 모든 컴포넌트 다크 모드 스타일 적용 (Tailwind CSS dark: 클래스 사용)
-- [ ] PWA 지원
-  - [ ] `app/manifest.ts` 생성
-  - [ ] Service Worker 설정
-  - [ ] 오프라인 지원
-- [x] 접근성 개선
-  - [x] ARIA 라벨 추가 (aria-label, role 속성 사용)
-  - [x] 키보드 네비게이션 개선 (갤러리, 지도 등)
-  - [ ] 색상 대비 확인 (WCAG AA)
-- [ ] 성능 모니터링
-  - [ ] Web Vitals 측정
-  - [ ] 에러 로깅 (Sentry 등)
-- [ ] 사용자 피드백
-  - [ ] 피드백 수집 기능
-  - [ ] 버그 리포트 기능
+- [ ] 반려동물 동반 가능 필터 (MVP 2.5)
+  - [ ] 토글 버튼
+  - [ ] 크기별 필터 (소형, 중형, 대형)
+- [ ] 에러 로깅 (Sentry 등)
+  - [ ] Sentry 프로젝트 생성
+  - [ ] `@sentry/nextjs` 설치
+  - [ ] 에러 추적 설정
+- [ ] CI/CD 파이프라인
+  - [ ] `.github/workflows/` 설정
+  - [ ] 자동 테스트 설정
+  - [ ] 자동 배포 설정
+- [ ] 테스트 코드 작성
+  - [ ] 단위 테스트 (Vitest)
+  - [ ] E2E 테스트 (Playwright)
